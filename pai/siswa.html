@@ -1105,30 +1105,10 @@
         // MATERI JSON FUNCTIONS
         // ============================================
         async function loadMateriJSON(kelas, semester) {
-        const fileName = `${kelas}-${semester}`;
+         
 
-const materiMap = {
-  // KELAS 10
-  "10-1": "data/materi10-1.json",
-  "10-2": "data/materi10-2.json",
-
-  // KELAS 11
-  "11-1": "data/materi11-1.json",
-  "11-2": "data/materi11-2.json",
-
-  // KELAS 12
-  "12-1": "data/materi12-1.json",
-  "12-2": "data/materi12-2.json"
-};
-
-const filePath = materiMap[fileName];
-
-if (!filePath) {
-  console.error("❌ File materi tidak ditemukan untuk:", fileName);
-} else {
-  console.log("✅ File materi digunakan:", filePath);
-}
-
+const filePath = "data/materi10-1.json";
+ 
             
             try {
                 const response = await fetch(filePath);
