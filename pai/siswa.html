@@ -1,0 +1,1574 @@
+ <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKPD PAI & Budi Pekerti - SMA Negeri 1 Wiradesa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* RESET & BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a5fb4;
+            --secondary-color: #26a269;
+            --accent-color: #e5a50a;
+            --danger-color: #c01c28;
+            --light-color: #f6f5f4;
+            --dark-color: #241f31;
+            --gray-color: #9a9996;
+            --border-color: #deddda;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* HEADER STYLES */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #1c71d8);
+            color: white;
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+        }
+
+        .logo-text h1 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: var(--radius);
+            display: none;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            min-height: calc(100vh - 180px);
+            padding: 30px 0;
+        }
+
+        /* LOGIN PAGE */
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .login-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .login-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 95, 180, 0.2);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0d52a1;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1f8a4f;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #a51a24;
+        }
+
+        .btn-block {
+            width: 100%;
+            display: block;
+        }
+
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background-color: #e1f0ff;
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .alert-success {
+            background-color: #e7f7ef;
+            color: var(--secondary-color);
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .alert-danger {
+            background-color: #fde8e8;
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .alert-warning {
+            background-color: #fff4e6;
+            color: #e67700;
+            border-left: 4px solid #e67700;
+        }
+
+        /* DASHBOARD PAGE */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 25px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--dark-color);
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background-color: var(--light-color);
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .dashboard-content {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: var(--light-color);
+            padding: 15px;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .info-card h4 {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            margin-bottom: 5px;
+        }
+
+        .info-card p {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* TABLE STYLES */
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .table tr:hover {
+            background-color: var(--light-color);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: #e7f7ef;
+            color: var(--secondary-color);
+        }
+
+        .badge-warning {
+            background-color: #fff4e6;
+            color: #e67700;
+        }
+
+        /* MATERI PAGE */
+        .materi-container {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .materi-header {
+            background: linear-gradient(135deg, var(--primary-color), #1c71d8);
+            color: white;
+            padding: 25px;
+        }
+
+        .materi-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .materi-title h2 {
+            font-size: 1.8rem;
+        }
+
+        .materi-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .meta-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px 15px;
+            border-radius: var(--radius);
+        }
+
+        .meta-item h4 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .meta-item p {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .materi-body {
+            padding: 30px;
+        }
+
+        .tujuan-pembelajaran {
+            background: var(--light-color);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .tujuan-pembelajaran h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* TAB STYLES */
+        .tab-container {
+            margin-bottom: 30px;
+        }
+
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray-color);
+            white-space: nowrap;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .tab-content {
+            padding: 25px 0;
+            min-height: 200px;
+        }
+
+        .aktivitas-content {
+            background: var(--light-color);
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .aktivitas-content h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        /* MODAL STYLES */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--primary-color);
+            color: white;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 1.4rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .jawaban-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .jawaban-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .jawaban-form textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* LOADING */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .student-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .materi-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .tab-header {
+                flex-wrap: wrap;
+            }
+            
+            .tab-btn {
+                flex: 1 0 50%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .login-body {
+                padding: 20px;
+            }
+            
+            .dashboard-content {
+                padding: 20px;
+            }
+            
+            .materi-body {
+                padding: 20px;
+            }
+            
+            .tab-btn {
+                flex: 1 0 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>LKPD PAI & Budi Pekerti</h1>
+                    <p>SMA Negeri 1 Wiradesa - Pattimura 467 Wiradesa Pekalongan</p>
+                </div>
+            </div>
+            <div class="user-info" id="userInfo">
+                <!-- Diisi oleh JavaScript -->
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+        <div class="container">
+            <!-- LOGIN PAGE -->
+            <div id="loginPage">
+                <div class="login-container">
+                    <div class="login-header">
+                        <h2><i class="fas fa-sign-in-alt"></i> Login Siswa</h2>
+                        <p>Masukkan kredensial untuk mengakses LKPD</p>
+                    </div>
+                    <div class="login-body">
+                        <div id="loginAlert" class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Gunakan USER dan PASSWORD dari Google Sheet
+                        </div>
+                        
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <label for="username"><i class="fas fa-user"></i> USER (Google Sheet)</label>
+                                <input type="text" id="username" class="form-control" placeholder="Masukkan username" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password"><i class="fas fa-lock"></i> PASSWORD</label>
+                                <input type="password" id="password" class="form-control" placeholder="Masukkan password" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="kelas"><i class="fas fa-users"></i> Kelas</label>
+                                <select id="kelas" class="form-control" required>
+                                    <option value="">Pilih Kelas</option>
+                                    <option value="10">X (Sepuluh)</option>
+                                    <option value="11">XI (Sebelas)</option>
+                                    <option value="12">XII (Dua Belas)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="semester"><i class="fas fa-calendar-alt"></i> Semester</label>
+                                <select id="semester" class="form-control" required>
+                                    <option value="">Pilih Semester</option>
+                                    <option value="1">Semester 1</option>
+                                    <option value="2">Semester 2</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-block btn-icon">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        </form>
+                        
+                        <div class="alert alert-warning" style="margin-top: 20px;">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>Informasi Login:</strong> 
+                            Sistem akan mengambil data dari Google Sheet menggunakan GViz Query:<br>
+                            <code>SELECT * WHERE User='username' AND Pass='password'</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD PAGE -->
+            <div id="dashboardPage" class="hidden">
+                <div class="dashboard-container">
+                    <!-- SIDEBAR -->
+                    <aside class="sidebar">
+                        <ul class="sidebar-menu">
+                            <li>
+                                <a href="#" class="menu-item active" data-page="dashboard">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="menu-item" data-page="materi" data-bab="1">
+                                    <i class="fas fa-book"></i> Bab 1
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="menu-item" data-page="materi" data-bab="2">
+                                    <i class="fas fa-book"></i> Bab 2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="menu-item" data-page="materi" data-bab="3">
+                                    <i class="fas fa-book"></i> Bab 3
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="menu-item" data-page="materi" data-bab="4">
+                                    <i class="fas fa-book"></i> Bab 4
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="menu-item" data-page="materi" data-bab="5">
+                                    <i class="fas fa-book"></i> Bab 5
+                                </a>
+                            </li>
+                            <li style="margin-top: 30px;">
+                                <button id="logoutBtn" class="menu-item btn-danger" style="width: 100%;">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </li>
+                        </ul>
+                    </aside>
+
+                    <!-- MAIN CONTENT -->
+                    <div class="dashboard-content">
+                        <div class="dashboard-header">
+                            <div>
+                                <h2><i class="fas fa-tachometer-alt"></i> Dashboard Siswa</h2>
+                                <p id="dashboardSubtitle">Ringkasan nilai dan aktivitas belajar</p>
+                            </div>
+                            <div>
+                                <button id="refreshBtn" class="btn btn-secondary btn-icon">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- INFO SISWA -->
+                        <div class="student-info" id="studentInfo">
+                            <!-- Diisi oleh JavaScript -->
+                        </div>
+
+                        <!-- TABEL NILAI -->
+                        <div class="table-responsive">
+                            <h3 style="margin-bottom: 15px; color: var(--primary-color);">
+                                <i class="fas fa-chart-bar"></i> Nilai per Aspek Penilaian
+                            </h3>
+                            <table class="table" id="nilaiTable">
+                                <thead>
+                                    <tr>
+                                        <th>Materi</th>
+                                        <th>Literasi Gambar</th>
+                                        <th>Literasi Digital</th>
+                                        <th>Konsep</th>
+                                        <th>Deep Learning</th>
+                                        <th>Refleksi Perilaku</th>
+                                        <th>Evaluasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nilaiTableBody">
+                                    <!-- Diisi oleh JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- REFLEKSI -->
+                        <div class="aktivitas-content">
+                            <h3><i class="fas fa-pen-fancy"></i> Refleksi Pembelajaran</h3>
+                            <textarea id="refleksiText" class="form-control" rows="4" placeholder="Tulis refleksi pembelajaran Anda di sini..."></textarea>
+                            <button id="saveRefleksiBtn" class="btn btn-primary" style="margin-top: 15px;">
+                                <i class="fas fa-save"></i> Simpan Refleksi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MATERI PAGE -->
+            <div id="materiPage" class="hidden">
+                <div class="materi-container">
+                    <!-- MATERI HEADER -->
+                    <div class="materi-header">
+                        <div class="materi-title">
+                            <h2><i class="fas fa-book-reader"></i> Aktivitas Belajar</h2>
+                            <button id="backToDashboard" class="btn btn-secondary btn-icon">
+                                <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+                            </button>
+                        </div>
+                        
+                        <div class="materi-meta" id="materiMeta">
+                            <!-- Diisi oleh JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- MATERI BODY -->
+                    <div class="materi-body">
+                        <!-- TUJUAN PEMBELAJARAN -->
+                        <div class="tujuan-pembelajaran" id="tujuanPembelajaran">
+                            <!-- Diisi oleh JavaScript -->
+                        </div>
+
+                        <!-- TAB AKTIVITAS -->
+                        <div class="tab-container">
+                            <div class="tab-header">
+                                <button class="tab-btn active" data-tab="1">
+                                    <i class="fas fa-image"></i> Literasi Gambar
+                                </button>
+                                <button class="tab-btn" data-tab="2">
+                                    <i class="fas fa-font"></i> Literasi Teks
+                                </button>
+                                <button class="tab-btn" data-tab="3">
+                                    <i class="fas fa-lightbulb"></i> Konsep
+                                </button>
+                                <button class="tab-btn" data-tab="4">
+                                    <i class="fas fa-brain"></i> Deep Learning
+                                </button>
+                                <button class="tab-btn" data-tab="5">
+                                    <i class="fas fa-clipboard-check"></i> Evaluasi
+                                </button>
+                            </div>
+
+                            <div class="tab-content">
+                                <div class="aktivitas-content">
+                                    <h3 id="aktivitasTitle">Literasi Gambar</h3>
+                                    <p id="aktivitasSoal">Pilih tab aktivitas untuk melihat soal...</p>
+                                    <button id="jawabBtn" class="btn btn-primary btn-icon" style="margin-top: 20px;">
+                                        <i class="fas fa-edit"></i> Klik untuk Menjawab
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL JAWABAN -->
+    <div id="jawabanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Lembar Kerja Siswa</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="jawabanForm" class="jawaban-form">
+                    <div class="form-group">
+                        <label>Aktivitas</label>
+                        <input type="text" id="modalAktivitas" class="form-control" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nama Siswa / Kelas</label>
+                        <input type="text" id="modalNamaKelas" class="form-control" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Materi</label>
+                        <input type="text" id="modalMateri" class="form-control" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Soal</label>
+                        <textarea id="modalSoal" class="form-control" rows="3" readonly></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jawabanSiswa">Jawab:</label>
+                        <textarea id="jawabanSiswa" class="form-control" rows="6" placeholder="Tulis jawaban Anda di sini..." required></textarea>
+                    </div>
+                    
+                    <div id="modalAlert" class="alert" style="display: none;"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelBtn" class="btn btn-secondary">Batal</button>
+                <button id="submitJawabanBtn" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Kirim Jawaban
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>LKPD dikembangkan untuk Pembelajaran Pendidikan Agama Islam SMA/SMK</p>
+            <p>&copy; 2024 SMA Negeri 1 Wiradesa. Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // KONFIGURASI
+        // ============================================
+        const CONFIG = {
+            GOOGLE_SHEET_URL: 'https://docs.google.com/spreadsheets/d/1lueDGzRkaXb4XV0wnWlARF3OmkGnhIrP1Eg6fnBghf0/edit?gid=0',
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbw3cD-70QqFStn4qDRYJqRrYHlgqtyMDb9SQOqM7A/exec',
+            DEMO_MODE: false // Set true untuk testing tanpa Google Sheets
+        };
+
+        // ============================================
+        // STATE MANAGEMENT
+        // ============================================
+        let currentUser = null;
+        let currentBab = 1;
+        let currentAktivitas = 1;
+        let userData = null;
+        let materiData = null;
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function showPage(pageName) {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('materiPage').classList.add('hidden');
+            
+            document.getElementById(pageName + 'Page').classList.remove('hidden');
+            updateUserInfo();
+        }
+
+        function updateUserInfo() {
+            if (currentUser && userData) {
+                const userInfoDiv = document.getElementById('userInfo');
+                userInfoDiv.innerHTML = `
+                    <i class="fas fa-user-graduate"></i> ${userData.nama} | 
+                    <i class="fas fa-users"></i> Kelas ${userData.kelas} | 
+                    <i class="fas fa-id-card"></i> ${userData.rec}
+                `;
+                userInfoDiv.style.display = 'block';
+            }
+        }
+
+        function showAlert(elementId, message, type = 'info') {
+            const alertDiv = document.getElementById(elementId);
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'}"></i> 
+                ${message}
+            `;
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.style.display = 'block';
+            
+            if (type !== 'info') {
+                setTimeout(() => {
+                    alertDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function formatNilai(nilaiString) {
+            if (!nilaiString) return Array(6).fill('-');
+            return nilaiString.split('#').map(n => n.trim() || '-');
+        }
+
+        function getKolomByBab(bab) {
+            // Mapping bab ke kolom Google Sheets
+            // BAB 1: Kolom L (12), BAB 2: M (13), dst.
+            return 11 + parseInt(bab); // 12, 13, 14, 15, 16
+        }
+
+        // ============================================
+        // GOOGLE SHEETS INTEGRATION
+        // ============================================
+        async function loginWithGoogleSheets(username, password, kelas, semester) {
+            // URL untuk Google Sheets API dengan GViz Query
+            const sheetId = '1lueDGzRkaXb4XV0wnWlARF3OmkGnhIrP1Eg6fnBghf0';
+            const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+            
+            // Query sesuai spesifikasi: SELECT * WHERE User='username' AND Pass='password'
+            const query = encodeURIComponent(`SELECT * WHERE A='${username}' AND B='${password}'`);
+            const url = `${sheetUrl}&tq=${query}`;
+            
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                // Parse respons Google Sheets
+                const jsonText = text.substring(47, text.length - 2);
+                const data = JSON.parse(jsonText);
+                
+                if (data.table && data.table.rows && data.table.rows.length > 0) {
+                    // Data ditemukan
+                    const row = data.table.rows[0];
+                    const cols = row.c;
+                    
+                    // Mapping kolom sesuai spesifikasi
+                    // Kolom D: Nama (index 3), Kolom E: Kelas (4), Kolom V: Rec (21)
+                    // Kolom G-K: Nilai BAB 1-5 (6-10)
+                    const userData = {
+                        username: username,
+                        nama: cols[3]?.v || 'Nama tidak ditemukan',
+                        kelas: cols[4]?.v || kelas,
+                        semester: semester,
+                        rec: cols[21]?.v || 'REC001',
+                        nilai: {
+                            bab1: cols[6]?.v || '0#0#0#0#0#0',
+                            bab2: cols[7]?.v || '0#0#0#0#0#0',
+                            bab3: cols[8]?.v || '0#0#0#0#0#0',
+                            bab4: cols[9]?.v || '0#0#0#0#0#0',
+                            bab5: cols[10]?.v || '0#0#0#0#0#0'
+                        },
+                        jawaban: {
+                            bab1: cols[11]?.v || 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : ',
+                            bab2: cols[12]?.v || 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : ',
+                            bab3: cols[13]?.v || 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : ',
+                            bab4: cols[14]?.v || 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : ',
+                            bab5: cols[15]?.v || 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : '
+                        }
+                    };
+                    
+                    return userData;
+                } else {
+                    throw new Error('USER atau PASSWORD salah!');
+                }
+            } catch (error) {
+                console.error('Error fetching from Google Sheets:', error);
+                throw new Error('Gagal terhubung ke Google Sheets. Periksa koneksi internet.');
+            }
+        }
+
+        // ============================================
+        // MATERI JSON FUNCTIONS
+        // ============================================
+        async function loadMateriJSON(kelas, semester) {
+            const fileName = `materi${kelas}-${semester}.json`;
+            const filePath = `data/${fileName}`;
+            
+            try {
+                const response = await fetch(filePath);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error(`File materi ${fileName} tidak ditemukan.`);
+                    }
+                    throw new Error(`Gagal memuat materi: ${response.statusText}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading materi:', error);
+                throw error;
+            }
+        }
+
+        // ============================================
+        // LOGIN FUNCTIONS
+        // ============================================
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const kelas = document.getElementById('kelas').value;
+            const semester = document.getElementById('semester').value;
+            
+            if (!username || !password || !kelas || !semester) {
+                showAlert('loginAlert', 'Harap lengkapi semua field!', 'danger');
+                return;
+            }
+            
+            // Tampilkan loading
+            const submitBtn = document.querySelector('#loginForm button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Memproses...';
+            submitBtn.disabled = true;
+            
+            try {
+                let userDataResult;
+                
+                if (CONFIG.DEMO_MODE) {
+                    // Mode demo untuk testing
+                    userDataResult = await simulateLogin(username, password, kelas, semester);
+                } else {
+                    // Mode produksi: ambil dari Google Sheets
+                    userDataResult = await loginWithGoogleSheets(username, password, kelas, semester);
+                }
+                
+                // Load materi JSON
+                try {
+                    await loadMateriJSON(kelas, semester);
+                } catch (materiError) {
+                    showAlert('loginAlert', 
+                        `Login berhasil, tetapi: ${materiError.message}. Anda tetap dapat mengakses dashboard.`, 
+                        'warning');
+                }
+                
+                // Simpan data user
+                userData = userDataResult;
+                currentUser = username;
+                
+                // Simpan ke sessionStorage
+                sessionStorage.setItem('lkpd_user', JSON.stringify({
+                    username,
+                    kelas,
+                    semester,
+                    timestamp: Date.now()
+                }));
+                
+                // Redirect ke dashboard
+                showPage('dashboard');
+                loadDashboard();
+                showAlert('loginAlert', 'Login berhasil!', 'success');
+                
+            } catch (error) {
+                showAlert('loginAlert', error.message, 'danger');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Fungsi simulasi untuk demo mode
+        async function simulateLogin(username, password, kelas, semester) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Data demo
+                    const demoUsers = {
+                        'siswa1': { password: 'pass1', nama: 'Ahmad Fauzi', rec: 'REC001' },
+                        'siswa2': { password: 'pass2', nama: 'Siti Aminah', rec: 'REC002' },
+                        'siswa3': { password: 'pass3', nama: 'Budi Santoso', rec: 'REC003' }
+                    };
+                    
+                    if (demoUsers[username] && demoUsers[username].password === password) {
+                        resolve({
+                            username,
+                            nama: demoUsers[username].nama,
+                            kelas: kelas,
+                            semester: semester,
+                            rec: demoUsers[username].rec,
+                            nilai: {
+                                bab1: '85#80#75#90#88#82',
+                                bab2: '78#82#85#80#79#81',
+                                bab3: '90#88#85#92#87#89',
+                                bab4: '80#85#82#78#83#81',
+                                bab5: '88#90#85#87#89#86'
+                            },
+                            jawaban: {
+                                bab1: 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : ',
+                                bab2: 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : ',
+                                bab3: 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : ',
+                                bab4: 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : ',
+                                bab5: 'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : '
+                            }
+                        });
+                    } else {
+                        reject(new Error('USER atau PASSWORD salah!'));
+                    }
+                }, 1000);
+            });
+        }
+
+        // ============================================
+        // DASHBOARD FUNCTIONS
+        // ============================================
+        function loadDashboard() {
+            if (!userData) {
+                showPage('login');
+                return;
+            }
+            
+            document.getElementById('dashboardSubtitle').textContent = 
+                `Tahun Ajaran 2024 - Semester ${userData.semester}`;
+            
+            const studentInfoDiv = document.getElementById('studentInfo');
+            studentInfoDiv.innerHTML = `
+                <div class="info-card">
+                    <h4><i class="fas fa-user"></i> Nama Siswa</h4>
+                    <p>${userData.nama}</p>
+                </div>
+                <div class="info-card">
+                    <h4><i class="fas fa-users"></i> Kelas</h4>
+                    <p>${userData.kelas}</p>
+                </div>
+                <div class="info-card">
+                    <h4><i class="fas fa-id-card"></i> Rec / Index</h4>
+                    <p>${userData.rec}</p>
+                </div>
+                <div class="info-card">
+                    <h4><i class="fas fa-calendar-alt"></i> Tahun / Semester</h4>
+                    <p>2024 / ${userData.semester}</p>
+                </div>
+            `;
+            
+            const tableBody = document.getElementById('nilaiTableBody');
+            tableBody.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const nilaiBab = userData.nilai[`bab${i}`];
+                const nilaiArray = formatNilai(nilaiBab);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>Bab ${i}</strong></td>
+                    <td><span class="badge ${parseInt(nilaiArray[0]) >= 80 ? 'badge-success' : 'badge-warning'}">${nilaiArray[0]}</span></td>
+                    <td><span class="badge ${parseInt(nilaiArray[1]) >= 80 ? 'badge-success' : 'badge-warning'}">${nilaiArray[1]}</span></td>
+                    <td><span class="badge ${parseInt(nilaiArray[2]) >= 80 ? 'badge-success' : 'badge-warning'}">${nilaiArray[2]}</span></td>
+                    <td><span class="badge ${parseInt(nilaiArray[3]) >= 80 ? 'badge-success' : 'badge-warning'}">${nilaiArray[3]}</span></td>
+                    <td><span class="badge ${parseInt(nilaiArray[4]) >= 80 ? 'badge-success' : 'badge-warning'}">${nilaiArray[4]}</span></td>
+                    <td><span class="badge ${parseInt(nilaiArray[5]) >= 80 ? 'badge-success' : 'badge-warning'}">${nilaiArray[5]}</span></td>
+                `;
+                tableBody.appendChild(row);
+            }
+            
+            const savedRefleksi = localStorage.getItem(`refleksi_${currentUser}`);
+            if (savedRefleksi) {
+                document.getElementById('refleksiText').value = savedRefleksi;
+            }
+        }
+
+        // ============================================
+        // MATERI FUNCTIONS
+        // ============================================
+        async function loadMateri(bab = 1) {
+            currentBab = bab;
+            currentAktivitas = 1;
+            
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === 'materi' && parseInt(item.dataset.bab) === bab) {
+                    item.classList.add('active');
+                }
+            });
+            
+            const materiKey = `${userData.kelas}-${userData.semester}`;
+            
+            try {
+                const allMateri = await loadMateriJSON(userData.kelas, userData.semester);
+                const babData = allMateri.find(m => parseInt(m.BAB) === bab);
+                
+                if (!babData) {
+                    showMateriNotAvailable(bab);
+                    return;
+                }
+                
+                materiData = babData;
+                displayMateri(babData);
+                
+            } catch (error) {
+                showMateriNotAvailable(bab);
+                console.error('Error loading materi:', error);
+            }
+        }
+
+        function showMateriNotAvailable(bab) {
+            document.getElementById('materiMeta').innerHTML = `
+                <div class="meta-item" style="grid-column: 1 / -1;">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Informasi</h4>
+                    <p>Materi Bab ${bab} belum tersedia</p>
+                </div>
+            `;
+            
+            document.getElementById('tujuanPembelajaran').innerHTML = `
+                <h3><i class="fas fa-info-circle"></i> Informasi Materi</h3>
+                <p>Maaf, materi untuk Bab ${bab} kelas ${userData.kelas} semester ${userData.semester} belum tersedia.</p>
+            `;
+            
+            document.getElementById('aktivitasSoal').textContent = 
+                'Materi belum tersedia. Silakan pilih bab lain.';
+            document.getElementById('jawabBtn').style.display = 'none';
+        }
+
+        function displayMateri(babData) {
+            document.getElementById('materiMeta').innerHTML = `
+                <div class="meta-item">
+                    <h4><i class="fas fa-user-graduate"></i> Nama / Kelas</h4>
+                    <p>${userData.nama} / ${userData.kelas}</p>
+                </div>
+                <div class="meta-item">
+                    <h4><i class="fas fa-id-card"></i> Rec</h4>
+                    <p>${userData.rec}</p>
+                </div>
+                <div class="meta-item">
+                    <h4><i class="fas fa-book"></i> BAB / Materi</h4>
+                    <p>${babData.BAB} / ${babData.Judul.substring(0, 30)}...</p>
+                </div>
+            `;
+            
+            document.getElementById('tujuanPembelajaran').innerHTML = `
+                <h3><i class="fas fa-bullseye"></i> Tujuan Pembelajaran</h3>
+                <p>${babData.tujuanpembelajaran}</p>
+            `;
+            
+            updateAktivitas();
+        }
+
+        function updateAktivitas() {
+            const aktivitasLabels = [
+                'Literasi Gambar',
+                'Literasi Teks',
+                'Konsep',
+                'Deep Learning',
+                'Evaluasi'
+            ];
+            
+            document.getElementById('aktivitasTitle').textContent = aktivitasLabels[currentAktivitas - 1];
+            
+            if (materiData && materiData[`aktivitas${currentAktivitas}`]) {
+                document.getElementById('aktivitasSoal').textContent = materiData[`aktivitas${currentAktivitas}`];
+                document.getElementById('jawabBtn').style.display = 'inline-flex';
+            } else {
+                document.getElementById('aktivitasSoal').textContent = 'Aktivitas tidak tersedia.';
+                document.getElementById('jawabBtn').style.display = 'none';
+            }
+        }
+
+        // ============================================
+        // MODAL & JAWABAN FUNCTIONS
+        // ============================================
+        function openJawabanModal() {
+            if (!materiData) return;
+            
+            const aktivitasLabels = [
+                'Literasi Gambar',
+                'Literasi Teks',
+                'Konsep',
+                'Deep Learning',
+                'Evaluasi'
+            ];
+            
+            document.getElementById('modalAktivitas').value = 
+                `BAB ${currentBab} - ${aktivitasLabels[currentAktivitas - 1]}`;
+            document.getElementById('modalNamaKelas').value = 
+                `${userData.nama} / Kelas ${userData.kelas}`;
+            document.getElementById('modalMateri').value = materiData.Judul;
+            document.getElementById('modalSoal').value = materiData[`aktivitas${currentAktivitas}`];
+            document.getElementById('jawabanSiswa').value = '';
+            document.getElementById('jawabanModal').style.display = 'flex';
+        }
+
+        async function submitJawaban() {
+            const jawaban = document.getElementById('jawabanSiswa').value.trim();
+            
+            if (!jawaban) {
+                showAlert('modalAlert', 'Jawaban tidak boleh kosong!', 'danger');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitJawabanBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Mengirim...';
+            submitBtn.disabled = true;
+            
+            try {
+                const formattedJawaban = `JWB AKT ${currentAktivitas} : ${jawaban}`;
+                
+                let jawabanLama = userData.jawaban[`bab${currentBab}`] || 
+                    'JWB AKT 1 : # JWB AKT 2 : # JWB AKT 3 : # JWB AKT 4 : # JWB AKT 5 : ';
+                
+                const parts = jawabanLama.split('#');
+                parts[currentAktivitas - 1] = formattedJawaban;
+                const jawabanBaru = parts.join('#');
+                
+                // Kirim ke Google Sheets via GAS
+                if (!CONFIG.DEMO_MODE) {
+                    const gasData = {
+                        baris: userData.rec,
+                        kolom: getKolomByBab(currentBab),
+                        data: jawabanBaru
+                    };
+                    
+                    // Menggunakan FormData untuk POST
+                    const formData = new FormData();
+                    formData.append('baris', userData.rec);
+                    formData.append('kolom', getKolomByBab(currentBab));
+                    formData.append('data', jawabanBaru);
+                    
+                    await fetch(CONFIG.GAS_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: formData
+                    });
+                }
+                
+                // Update data lokal
+                userData.jawaban[`bab${currentBab}`] = jawabanBaru;
+                
+                showAlert('modalAlert', '✅ Jawaban berhasil dikirim!', 'success');
+                
+                setTimeout(() => {
+                    document.getElementById('jawabanModal').style.display = 'none';
+                }, 2000);
+                
+            } catch (error) {
+                showAlert('modalAlert', `❌ Error: ${error.message}`, 'danger');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.menu-item')) {
+                const menuItem = e.target.closest('.menu-item');
+                const page = menuItem.dataset.page;
+                
+                if (page === 'dashboard') {
+                    showPage('dashboard');
+                    loadDashboard();
+                } else if (page === 'materi') {
+                    const bab = parseInt(menuItem.dataset.bab);
+                    loadMateri(bab);
+                    showPage('materi');
+                }
+            }
+            
+            if (e.target.id === 'backToDashboard' || e.target.closest('#backToDashboard')) {
+                showPage('dashboard');
+                loadDashboard();
+            }
+            
+            if (e.target.id === 'refreshBtn' || e.target.closest('#refreshBtn')) {
+                loadDashboard();
+                showAlert('loginAlert', 'Data telah diperbarui!', 'success');
+            }
+            
+            if (e.target.closest('.tab-btn')) {
+                const tabBtn = e.target.closest('.tab-btn');
+                
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                tabBtn.classList.add('active');
+                
+                currentAktivitas = parseInt(tabBtn.dataset.tab);
+                updateAktivitas();
+            }
+            
+            if (e.target.id === 'jawabBtn' || e.target.closest('#jawabBtn')) {
+                openJawabanModal();
+            }
+            
+            if (e.target.id === 'saveRefleksiBtn' || e.target.closest('#saveRefleksiBtn')) {
+                const refleksi = document.getElementById('refleksiText').value.trim();
+                if (refleksi) {
+                    localStorage.setItem(`refleksi_${currentUser}`, refleksi);
+                    showAlert('loginAlert', 'Refleksi berhasil disimpan!', 'success');
+                } else {
+                    showAlert('loginAlert', 'Harap tulis refleksi terlebih dahulu!', 'danger');
+                }
+            }
+        });
+
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            document.getElementById('jawabanModal').style.display = 'none';
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', function() {
+            document.getElementById('jawabanModal').style.display = 'none';
+        });
+
+        document.getElementById('submitJawabanBtn').addEventListener('click', submitJawaban);
+
+        window.addEventListener('click', function(e) {
+            if (e.target.id === 'jawabanModal') {
+                document.getElementById('jawabanModal').style.display = 'none';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                currentUser = null;
+                userData = null;
+                sessionStorage.removeItem('lkpd_user');
+                
+                document.getElementById('loginForm').reset();
+                showPage('login');
+                showAlert('loginAlert', 'Anda telah logout. Silakan login kembali.', 'info');
+            }
+        });
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUser = sessionStorage.getItem('lkpd_user');
+            if (savedUser) {
+                const { username, timestamp } = JSON.parse(savedUser);
+                
+                if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+                    // Coba login ulang dengan session
+                    showPage('login');
+                    showAlert('loginAlert', 'Sesi Anda telah berakhir. Silakan login kembali.', 'info');
+                }
+            }
+            
+            showPage('login');
+        });
+    </script>
+</body>
+</html>
