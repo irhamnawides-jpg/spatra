@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Nilai & Jawaban - Google Sheets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            min-height: 600px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px 30px;
+            border-bottom: 5px solid #3498db;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .header-subtitle {
+            font-size: 14px;
+            color: #bdc3c7;
+            opacity: 0.9;
+        }
+        
+        .connection-status {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #27ae60;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.offline {
+            background-color: #e74c3c;
+            animation: none;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .student-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #bdc3c7;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .dashboard-content {
+            padding: 30px;
+            min-height: 500px;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            border-radius: 12px;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .student-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .student-selector label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        select {
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #bdc3c7;
+            font-size: 16px;
+            background-color: white;
+            color: #2c3e50;
+            font-weight: 500;
+            min-width: 250px;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .catatan-box {
+            font-style: italic;
+            color: #7f8c8d;
+            background-color: #f8f9fa;
+            padding: 12px 20px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            max-width: 400px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e1e5eb;
+            margin-bottom: 25px;
+            background-color: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab.active {
+            color: #3498db;
+            background-color: white;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .tab:hover:not(.active) {
+            color: #2c3e50;
+            background-color: #e9ecef;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid #e1e5eb;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        
+        thead {
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        th {
+            padding: 16px 12px;
+            text-align: center;
+            font-weight: 600;
+            border-right: 1px solid #34495e;
+        }
+        
+        th:last-child {
+            border-right: none;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #e1e5eb;
+            transition: background-color 0.2s;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        tbody tr:nth-child(even):hover {
+            background-color: #f1f3f5;
+        }
+        
+        td {
+            padding: 14px 12px;
+            text-align: center;
+            border-right: 1px solid #e1e5eb;
+        }
+        
+        td:first-child {
+            font-weight: 600;
+            background-color: #f1f8ff;
+            color: #2c3e50;
+        }
+        
+        td:last-child {
+            border-right: none;
+        }
+        
+        .score-cell {
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        
+        .score-high {
+            color: #27ae60;
+            background-color: rgba(39, 174, 96, 0.1);
+        }
+        
+        .score-medium {
+            color: #f39c12;
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+        
+        .score-low {
+            color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .jawaban-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .jawaban-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-top: 5px solid #3498db;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .jawaban-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .jawaban-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f8ff;
+        }
+        
+        .jawaban-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .jawaban-badge {
+            background-color: #3498db;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .aktivitas-list {
+            flex-grow: 1;
+        }
+        
+        .aktivitas-item {
+            margin-bottom: 16px;
+            padding: 14px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            transition: background-color 0.3s;
+        }
+        
+        .aktivitas-item:hover {
+            background-color: #e9ecef;
+        }
+        
+        .aktivitas-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+        }
+        
+        .aktivitas-label i {
+            color: #3498db;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .aktivitas-deskripsi {
+            color: #5a6c7d;
+            line-height: 1.6;
+            font-size: 14.5px;
+            padding-left: 30px;
+        }
+        
+        .evaluasi-box {
+            background-color: #e8f4fc;
+            border-radius: 8px;
+            padding: 18px;
+            margin-top: 20px;
+            border: 1px dashed #3498db;
+        }
+        
+        .evaluasi-label {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+        
+        .evaluasi-label i {
+            color: #3498db;
+        }
+        
+        .evaluasi-jawaban {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            letter-spacing: 3px;
+            color: #2c3e50;
+            padding: 12px;
+            background-color: white;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 700;
+            border: 1px solid #bdc3c7;
+        }
+        
+        .summary-cards {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .card {
+            flex: 1;
+            min-width: 200px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid #3498db;
+        }
+        
+        .card h3 {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .card-2 {
+            border-top-color: #2ecc71;
+        }
+        
+        .card-3 {
+            border-top-color: #e74c3c;
+        }
+        
+        .card-4 {
+            border-top-color: #f39c12;
+        }
+        
+        .bab-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .bab-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding: 20px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-top: 1px solid #e1e5eb;
+        }
+        
+        .error-message {
+            background-color: #fde8e8;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .retry-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        
+        .retry-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .data-source {
+            text-align: center;
+            margin-top: 10px;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+            
+            .connection-status {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-top: 15px;
+                justify-content: center;
+            }
+            
+            .dashboard-content {
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .student-info {
+                gap: 15px;
+            }
+            
+            .info-item {
+                min-width: 100%;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+            
+            .tab {
+                padding: 12px 20px;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+            
+            .jawaban-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .catatan-box {
+                max-width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container" id="dashboard-container">
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="loader"></div>
+            <p>Memuat data dari Google Sheets...</p>
+            <p class="data-source">Sumber: https://docs.google.com/spreadsheets/d/1lueDGzRkaXb4XV0wnWlARF3OmkGnhIrP1Eg6fnBghf0</p>
+        </div>
+        
+        <div class="header">
+            <h1>DASHBOARD NILAI & JAWABAN SISWA</h1>
+            <div class="header-subtitle">Data Terhubung dengan Google Sheets</div>
+            <div class="connection-status" id="connection-status">
+                <div class="status-dot" id="status-dot"></div>
+                <span id="status-text">Menghubungkan...</span>
+            </div>
+            
+            <div class="student-info">
+                <div class="info-item">
+                    <div class="info-label">Nama Siswa</div>
+                    <div id="nama-siswa" class="info-value">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Kelas</div>
+                    <div id="kelas" class="info-value">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Kode Affiliasi</div>
+                    <div id="kode-affiliasi" class="info-value">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Tahun / Semester</div>
+                    <div id="tahun-semester" class="info-value">2024 / Genap</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content" id="dashboard-content" style="display: none;">
+            <div class="controls">
+                <div class="student-selector">
+                    <label for="student-select">Pilih Siswa:</label>
+                    <select id="student-select">
+                        <option value="">Memuat data...</option>
+                    </select>
+                </div>
+                <div id="catatan" class="catatan-box">
+                    -
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab active" data-tab="nilai">
+                    <i class="fas fa-chart-bar"></i> NILAI SISWA
+                </button>
+                <button class="tab" data-tab="jawaban">
+                    <i class="fas fa-file-alt"></i> JAWABAN AKTIVITAS
+                </button>
+                <button class="tab" data-tab="ringkasan">
+                    <i class="fas fa-chart-pie"></i> RINGKASAN
+                </button>
+            </div>
+            
+            <!-- Tab Nilai -->
+            <div id="nilai-tab" class="tab-content active">
+                <div id="nilai-error" class="error-message" style="display: none;"></div>
+                <div class="table-container">
+                    <table id="nilai-table">
+                        <thead>
+                            <tr>
+                                <th>Materi</th>
+                                <th>Lit. Gambar</th>
+                                <th>Lit. Digital</th>
+                                <th>Konsep</th>
+                                <th>Deep Learning</th>
+                                <th>Refleksi Perilaku</th>
+                                <th>Evaluasi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px;">
+                                    <p>Data sedang dimuat...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="summary-cards">
+                    <div class="card">
+                        <h3>Rata-rata Keseluruhan</h3>
+                        <div id="rata-rata" class="card-value">-</div>
+                    </div>
+                    <div class="card card-2">
+                        <h3>Bab Terbaik</h3>
+                        <div id="bab-terbaik" class="card-value">-</div>
+                    </div>
+                    <div class="card card-3">
+                        <h3>Bab Terendah</h3>
+                        <div id="bab-terendah" class="card-value">-</div>
+                    </div>
+                    <div class="card card-4">
+                        <h3>Total Nilai</h3>
+                        <div id="total-nilai" class="card-value">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Jawaban -->
+            <div id="jawaban-tab" class="tab-content">
+                <h3 style="color: #2c3e50; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #3498db;">
+                    <i class="fas fa-book-open"></i> JAWABAN AKTIVITAS DAN EVALUASI
+                </h3>
+                <div id="jawaban-error" class="error-message" style="display: none;"></div>
+                <div id="jawaban-container" class="jawaban-container">
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="fas fa-spinner fa-spin fa-2x" style="margin-bottom: 15px;"></i>
+                        <p>Memuat jawaban siswa...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Ringkasan -->
+            <div id="ringkasan-tab" class="tab-content">
+                <h3 style="color: #2c3e50; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #3498db;">
+                    <i class="fas fa-chart-line"></i> RINGKASAN STATISTIK
+                </h3>
+                <div id="ringkasan-error" class="error-message" style="display: none;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;" id="ringkasan-container">
+                    <div>
+                        <div class="statistik-box" style="background-color: #f8f9fa; padding: 25px; border-radius: 10px; border: 1px solid #e1e5eb;">
+                            <h4 style="color: #2c3e50; margin-bottom: 20px; font-size: 18px;">Statistik Detail</h4>
+                            <div id="statistik-detail">
+                                <p>Data statistik akan muncul di sini...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="chart-container" style="background-color: white; padding: 25px; border-radius: 10px; border: 1px solid #e1e5eb; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                            <h4 style="color: #2c3e50; margin-bottom: 20px; font-size: 18px;">Distribusi Nilai per Bab</h4>
+                            <div id="chart-placeholder" style="text-align: center; padding: 40px;">
+                                <p>Grafik akan ditampilkan setelah data dimuat...</p>
+                            </div>
+                            <canvas id="nilai-chart" width="400" height="300" style="max-width: 100%; display: none;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <i class="fas fa-graduation-cap"></i> Dashboard Nilai & Jawaban Siswa © 2024 - Terhubung dengan Google Sheets
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Google Sheets
+        const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/1lueDGzRkaXb4XV0wnWlARF3OmkGnhIrP1Eg6fnBghf0';
+        const SHEET_ID = '0'; // gid=0
+        
+        // Data fallback jika Google Sheets tidak bisa diakses
+        const FALLBACK_DATA = [
+            {
+                "USER": "student01",
+                "PASSWORD": "pass123",
+                "KODE_AFFILIASI": "AFF-2024-001",
+                "NAMA_LENGKAP": "Budi Santoso",
+                "KELAS": "XII IPA 1",
+                "CATATAN": "Siswa berprestasi tahun 2024",
+                "NILAI_BAB1": "85#78#92#88#90#86",
+                "NILAI_BAB2": "76#89#94#81#85#92",
+                "NILAI_BAB3": "88#92#79#85#90#87",
+                "NILAI_BAB4": "91#84#86#89#93#88",
+                "NILAI_BAB5": "82#90#87#84#91#89",
+                "JAWABAN_BAB1": "JWB AK1: Membuat mind map konsep dasar#JWB AK2: Menganalisis 5 kasus studi#JWB AK3: Presentasi kelompok tentang literasi digital#JWB AK4: Simulasi penggunaan tool AI#JWB AK5: Refleksi pembelajaran mandiri#Evaluasi: ABCDABDAAA",
+                "JAWABAN_BAB2": "JWB AK1: Studi literatur 10 jurnal#JWB AK2: Analisis perbandingan tools#JWB AK3: Pembuatan infografis digital#JWB AK4: Diskusi panel online#JWB AK5: Portofolio mingguan#Evaluasi: BCADCBADAB",
+                "JAWABAN_BAB3": "JWB AK1: Eksperimen lab virtual#JWB AK2: Case study analysis#JWB AK3: Peer review assignment#JWB AK4: Video tutorial creation#JWB AK5: Learning journal#Evaluasi: DABCCDABBA",
+                "JAWABAN_BAB4": "JWB AK1: Research proposal#JWB AK2: Data collection project#JWB AK3: Statistical analysis#JWB AK4: Presentation skills#JWB AK5: Critical reflection#Evaluasi: CDBAABCDAB",
+                "JAWABAN_BAB5": "JWB AK1: Final project design#JWB AK2: Implementation phase#JWB AK3: Testing and validation#JWB AK4: Documentation#JWB AK5: Final presentation#Evaluasi: ABCDDCBAAB"
+            },
+            {
+                "USER": "student02",
+                "PASSWORD": "secure456",
+                "KODE_AFFILIASI": "AFF-2024-002",
+                "NAMA_LENGKAP": "Siti Nurhaliza",
+                "KELAS": "XII IPS 2",
+                "CATATAN": "Aktif dalam organisasi",
+                "NILAI_BAB1": "78#85#90#82#88#84",
+                "NILAI_BAB2": "85#92#76#89#81#90",
+                "NILAI_BAB3": "90#83#88#85#92#79",
+                "NILAI_BAB4": "84#89#91#86#88#93",
+                "NILAI_BAB5": "87#84#90#92#85#91",
+                "JAWABAN_BAB1": "JWB AK1: Membuat peta konsep interaktif#JWB AK2: Analisis 3 studi kasus utama#JWB AK3: Presentasi literasi media#JWB AK4: Workshop penggunaan aplikasi#JWB AK5: Jurnal refleksi mingguan#Evaluasi: BACDABCDAA",
+                "JAWABAN_BAB2": "JWB AK1: Review 8 artikel ilmiah#JWB AK2: Comparative analysis tools#JWB AK3: Digital poster creation#JWB AK4: Online forum discussion#JWB AK5: Weekly progress report#Evaluasi: CBADDCBABA",
+                "JAWABAN_BAB3": "JWB AK1: Virtual simulation lab#JWB AK2: Detailed case analysis#JWB AK3: Cross-peer evaluation#JWB AK4: Instructional video#JWB AK5: Reflective learning log#Evaluasi: DABCABCDAB",
+                "JAWABAN_BAB4": "JWB AK1: Mini research project#JWB AK2: Field data gathering#JWB AK3: Data interpretation#JWB AK4: Public speaking drill#JWB AK5: Self-assessment essay#Evaluasi: BCDAABCDBA",
+                "JAWABAN_BAB5": "JWB AK1: Capstone project plan#JWB AK2: Project execution#JWB AK3: Quality assessment#JWB AK4: Project report#JWB AK5: Final defense#Evaluasi: ABDCCDABBA"
+            }
+        ];
+
+        // Variabel global
+        let allStudentsData = [];
+        let currentStudentIndex = 0;
+        let isOnline = false;
+
+        // Fungsi untuk mengambil data dari Google Sheets
+        async function fetchDataFromGoogleSheets() {
+            try {
+                // Gunakan Google Sheets API v4 atau gviz
+                // Format: https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet={SHEET_NAME}
+                
+                const url = `${GOOGLE_SHEETS_URL}/gviz/tq?tqx=out:json&gid=${SHEET_ID}`;
+                
+                console.log('Mengambil data dari:', url);
+                
+                const response = await fetch(url, {
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                // Google Sheets mengembalikan data dalam format khusus
+                const jsonString = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]+)\);/)[1];
+                const data = JSON.parse(jsonString);
+                
+                // Konversi data dari Google Sheets format ke format kita
+                return convertGoogleSheetsData(data);
+                
+            } catch (error) {
+                console.error('Error mengambil data dari Google Sheets:', error);
+                console.log('Menggunakan data fallback...');
+                return FALLBACK_DATA;
+            }
+        }
+
+        // Fungsi untuk mengonversi data Google Sheets ke format kita
+        function convertGoogleSheetsData(googleData) {
+            if (!googleData || !googleData.table || !googleData.table.rows) {
+                return FALLBACK_DATA;
+            }
+            
+            const rows = googleData.table.rows;
+            const columns = googleData.table.cols || [];
+            
+            // Jika data kosong, gunakan fallback
+            if (rows.length === 0) {
+                return FALLBACK_DATA;
+            }
+            
+            const students = [];
+            
+            // Konversi setiap baris
+            rows.forEach((row, rowIndex) => {
+                // Lewati header jika ada
+                if (rowIndex === 0 && row.c[0] && row.c[0].v === 'USER') {
+                    return;
+                }
+                
+                const student = {};
+                
+                // Kolom yang diharapkan (sesuai struktur di atas)
+                const columnMapping = [
+                    'USER', 'PASSWORD', 'KODE_AFFILIASI', 'NAMA_LENGKAP', 'KELAS', 'CATATAN',
+                    'NILAI_BAB1', 'NILAI_BAB2', 'NILAI_BAB3', 'NILAI_BAB4', 'NILAI_BAB5',
+                    'JAWABAN_BAB1', 'JAWABAN_BAB2', 'JAWABAN_BAB3', 'JAWABAN_BAB4', 'JAWABAN_BAB5'
+                ];
+                
+                columnMapping.forEach((colName, colIndex) => {
+                    if (row.c[colIndex] && row.c[colIndex].v !== undefined) {
+                        student[colName] = String(row.c[colIndex].v);
+                    } else {
+                        // Jika data tidak ada, gunakan nilai dari fallback jika tersedia
+                        const fallbackStudent = FALLBACK_DATA[rowIndex] || FALLBACK_DATA[0];
+                        student[colName] = fallbackStudent[colName] || '';
+                    }
+                });
+                
+                students.push(student);
+            });
+            
+            return students.length > 0 ? students : FALLBACK_DATA;
+        }
+
+        // Fungsi untuk memparsing data nilai dari format string
+        function parseNilaiData(nilaiString) {
+            const babData = [];
+            
+            // Format: "85#78#92#88#90#86"
+            const nilaiArray = nilaiString.split('#').map(n => parseInt(n.trim()));
+            
+            if (nilaiArray.length === 6) {
+                return nilaiArray;
+            }
+            
+            return [0, 0, 0, 0, 0, 0];
+        }
+
+        // Fungsi untuk memparsing data jawaban dari format string
+        function parseJawabanData(jawabanString) {
+            // Format: "JWB AK1: Deskripsi1#JWB AK2: Deskripsi2#...#Evaluasi: ABCD"
+            const parts = jawabanString.split('#');
+            
+            const aktivitas = [];
+            let evaluasi = '';
+            
+            parts.forEach(part => {
+                if (part.includes('Evaluasi:')) {
+                    evaluasi = part.replace('Evaluasi:', '').trim();
+                } else if (part.includes('JWB AK')) {
+                    const cleaned = part.replace(/JWB AK\d+:/, '').trim();
+                    aktivitas.push(cleaned);
+                }
+            });
+            
+            // Pastikan ada 5 aktivitas
+            while (aktivitas.length < 5) {
+                aktivitas.push('-');
+            }
+            
+            return { aktivitas, evaluasi };
+        }
+
+        // Fungsi untuk menghitung statistik
+        function calculateStatistics(studentData) {
+            const nilaiData = [];
+            
+            // Kumpulkan semua nilai dari bab 1-5
+            for (let i = 1; i <= 5; i++) {
+                const nilaiKey = `NILAI_BAB${i}`;
+                if (studentData[nilaiKey]) {
+                    const nilaiArray = parseNilaiData(studentData[nilaiKey]);
+                    nilaiData.push({
+                        bab: i,
+                        nilai: nilaiArray
+                    });
+                }
+            }
+            
+            let totalAll = 0;
+            let countAll = 0;
+            const babAverages = [];
+            
+            nilaiData.forEach(bab => {
+                const babTotal = bab.nilai.reduce((sum, nilai) => sum + nilai, 0);
+                const babAverage = babTotal / bab.nilai.length;
+                
+                babAverages.push({
+                    bab: bab.bab,
+                    average: babAverage
+                });
+                
+                totalAll += babTotal;
+                countAll += bab.nilai.length;
+            });
+            
+            const overallAverage = countAll > 0 ? totalAll / countAll : 0;
+            
+            // Cari bab terbaik dan terendah
+            let bestBab = { bab: 0, average: 0 };
+            let worstBab = { bab: 0, average: 100 };
+            
+            if (babAverages.length > 0) {
+                bestBab = babAverages.reduce((max, bab) => bab.average > max.average ? bab : max);
+                worstBab = babAverages.reduce((min, bab) => bab.average < min.average ? bab : min);
+            }
+            
+            // Hitung nilai tertinggi dan terendah
+            let allNilai = [];
+            nilaiData.forEach(bab => {
+                allNilai = allNilai.concat(bab.nilai);
+            });
+            
+            const nilaiTertinggi = allNilai.length > 0 ? Math.max(...allNilai) : 0;
+            const nilaiTerendah = allNilai.length > 0 ? Math.min(...allNilai) : 0;
+            
+            return {
+                overallAverage,
+                bestBab,
+                worstBab,
+                totalAll,
+                nilaiTertinggi,
+                nilaiTerendah,
+                babAverages,
+                jumlahNilai: allNilai.length
+            };
+        }
+
+        // Fungsi untuk menampilkan data siswa
+        function displayStudentData(studentIndex) {
+            if (!allStudentsData || allStudentsData.length === 0) {
+                showError('Tidak ada data siswa yang tersedia');
+                return;
+            }
+            
+            const studentData = allStudentsData[studentIndex];
+            currentStudentIndex = studentIndex;
+            
+            // Update informasi siswa
+            document.getElementById('nama-siswa').textContent = studentData.NAMA_LENGKAP || '-';
+            document.getElementById('kelas').textContent = studentData.KELAS || '-';
+            document.getElementById('kode-affiliasi').textContent = studentData.KODE_AFFILIASI || '-';
+            document.getElementById('catatan').textContent = studentData.CATATAN || '-';
+            
+            // Tampilkan data nilai
+            displayNilaiData(studentData);
+            
+            // Tampilkan data jawaban
+            displayJawabanData(studentData);
+            
+            // Tampilkan statistik
+            displayStatistikData(studentData);
+        }
+
+        // Fungsi untuk menampilkan data nilai
+        function displayNilaiData(studentData) {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            
+            const stats = calculateStatistics(studentData);
+            
+            // Update statistik cards
+            document.getElementById('rata-rata').textContent = stats.overallAverage.toFixed(1);
+            document.getElementById('bab-terbaik').textContent = stats.bestBab.bab > 0 ? 
+                `Bab ${stats.bestBab.bab} (${stats.bestBab.average.toFixed(1)})` : '-';
+            document.getElementById('bab-terendah').textContent = stats.worstBab.bab > 0 ? 
+                `Bab ${stats.worstBab.bab} (${stats.worstBab.average.toFixed(1)})` : '-';
+            document.getElementById('total-nilai').textContent = stats.totalAll;
+            
+            // Tampilkan nilai per bab
+            for (let bab = 1; bab <= 5; bab++) {
+                const nilaiKey = `NILAI_BAB${bab}`;
+                const nilaiString = studentData[nilaiKey];
+                
+                if (nilaiString) {
+                    const nilaiArray = parseNilaiData(nilaiString);
+                    
+                    const row = document.createElement('tr');
+                    
+                    // Kolom bab
+                    const babCell = document.createElement('td');
+                    babCell.innerHTML = `<div class="bab-header"><div class="bab-icon">${bab}</div><span>BAB ${bab}</span></div>`;
+                    row.appendChild(babCell);
+                    
+                    // Kolom nilai
+                    nilaiArray.forEach(nilai => {
+                        const nilaiCell = document.createElement('td');
+                        nilaiCell.textContent = nilai;
+                        nilaiCell.classList.add('score-cell');
+                        
+                        // Beri warna berdasarkan nilai
+                        if (nilai >= 85) {
+                            nilaiCell.classList.add('score-high');
+                        } else if (nilai >= 75) {
+                            nilaiCell.classList.add('score-medium');
+                        } else {
+                            nilaiCell.classList.add('score-low');
+                        }
+                        
+                        row.appendChild(nilaiCell);
+                    });
+                    
+                    tableBody.appendChild(row);
+                }
+            }
+            
+            // Jika tidak ada data
+            if (tableBody.children.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                            <i class="fas fa-exclamation-circle"></i> Tidak ada data nilai tersedia
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Fungsi untuk menampilkan data jawaban
+        function displayJawabanData(studentData) {
+            const jawabanContainer = document.getElementById('jawaban-container');
+            jawabanContainer.innerHTML = '';
+            
+            for (let bab = 1; bab <= 5; bab++) {
+                const jawabanKey = `JAWABAN_BAB${bab}`;
+                const jawabanString = studentData[jawabanKey];
+                
+                if (jawabanString) {
+                    const { aktivitas, evaluasi } = parseJawabanData(jawabanString);
+                    
+                    let aktivitasHTML = '';
+                    aktivitas.forEach((desc, index) => {
+                        aktivitasHTML += `
+                            <div class="aktivitas-item">
+                                <div class="aktivitas-label">
+                                    <i class="fas fa-check-circle"></i>
+                                    Aktivitas ${index + 1}
+                                </div>
+                                <div class="aktivitas-deskripsi">${desc}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    const card = document.createElement('div');
+                    card.className = 'jawaban-card';
+                    card.innerHTML = `
+                        <div class="jawaban-header">
+                            <div class="jawaban-title">BAB ${bab}</div>
+                            <div class="jawaban-badge">${aktivitas.length} Aktivitas</div>
+                        </div>
+                        
+                        <div class="aktivitas-list">
+                            ${aktivitasHTML}
+                        </div>
+                        
+                        <div class="evaluasi-box">
+                            <div class="evaluasi-label">
+                                <i class="fas fa-clipboard-check"></i>
+                                Jawaban Evaluasi
+                            </div>
+                            <div class="evaluasi-jawaban">${evaluasi || '-'}</div>
+                        </div>
+                    `;
+                    
+                    jawabanContainer.appendChild(card);
+                }
+            }
+            
+            // Jika tidak ada data
+            if (jawabanContainer.children.length === 0) {
+                jawabanContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d; grid-column: 1 / -1;">
+                        <i class="fas fa-exclamation-circle fa-2x" style="margin-bottom: 15px;"></i>
+                        <p>Tidak ada data jawaban tersedia</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Fungsi untuk menampilkan statistik data
+        function displayStatistikData(studentData) {
+            const stats = calculateStatistics(studentData);
+            const statistikDiv = document.getElementById('statistik-detail');
+            
+            const statistikHTML = `
+                <div class="statistik-item" style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #e1e5eb;">
+                    <div class="statistik-label" style="font-size: 14px; color: #7f8c8d; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-chart-line"></i> Nilai Tertinggi
+                    </div>
+                    <div class="statistik-value" style="font-size: 22px; font-weight: 700; color: ${stats.nilaiTertinggi >= 85 ? '#27ae60' : stats.nilaiTertinggi >= 75 ? '#f39c12' : '#e74c3c'};">${stats.nilaiTertinggi}</div>
+                </div>
+                
+                <div class="statistik-item" style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #e1e5eb;">
+                    <div class="statistik-label" style="font-size: 14px; color: #7f8c8d; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-chart-line"></i> Nilai Terendah
+                    </div>
+                    <div class="statistik-value" style="font-size: 22px; font-weight: 700; color: ${stats.nilaiTerendah >= 85 ? '#27ae60' : stats.nilaiTerendah >= 75 ? '#f39c12' : '#e74c3c'};">${stats.nilaiTerendah}</div>
+                </div>
+                
+                <div class="statistik-item" style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #e1e5eb;">
+                    <div class="statistik-label" style="font-size: 14px; color: #7f8c8d; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-star"></i> Jumlah Nilai
+                    </div>
+                    <div class="statistik-value" style="font-size: 22px; font-weight: 700; color: #3498db;">${stats.jumlahNilai}</div>
+                </div>
+                
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #e1e5eb;">
+                    <div style="font-size: 16px; font-weight: 600; color: #2c3e50; margin-bottom: 15px;">
+                        Rata-rata per Bab
+                    </div>
+                    ${stats.babAverages.map(item => `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 6px;">
+                            <span style="font-weight: 600; color: #2c3e50;">Bab ${item.bab}</span>
+                            <span style="color: ${item.average >= 85 ? '#27ae60' : item.average >= 75 ? '#f39c12' : '#e74c3c'}; font-weight: 700;">
+                                ${item.average.toFixed(1)}
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            statistikDiv.innerHTML = statistikHTML;
+            
+            // Update chart jika tersedia
+            if (window.Chart && stats.babAverages.length > 0) {
+                updateChart(stats.babAverages);
+            }
+        }
+
+        // Fungsi untuk update chart
+        function updateChart(babAverages) {
+            const canvas = document.getElementById('nilai-chart');
+            const placeholder = document.getElementById('chart-placeholder');
+            
+            if (!canvas) return;
+            
+            canvas.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Hapus chart sebelumnya jika ada
+            if (window.myChart) {
+                window.myChart.destroy();
+            }
+            
+            const labels = babAverages.map(item => `Bab ${item.bab}`);
+            const data = babAverages.map(item => item.average);
+            const colors = data.map(avg => {
+                if (avg >= 85) return '#27ae60';
+                if (avg >= 75) return '#f39c12';
+                return '#e74c3c';
+            });
+            
+            window.myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Rata-rata Nilai',
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.8', '1')),
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Nilai Rata-rata'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Materi Bab'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fungsi untuk mengisi dropdown siswa
+        function populateStudentDropdown(studentsData) {
+            const selectElement = document.getElementById('student-select');
+            selectElement.innerHTML = '';
+            
+            if (!studentsData || studentsData.length === 0) {
+                selectElement.innerHTML = '<option value="">Tidak ada data siswa</option>';
+                return;
+            }
+            
+            studentsData.forEach((student, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${student.NAMA_LENGKAP} - ${student.KELAS}`;
+                selectElement.appendChild(option);
+            });
+            
+            // Set event listener untuk dropdown
+            selectElement.addEventListener('change', function() {
+                const selectedIndex = parseInt(this.value);
+                if (!isNaN(selectedIndex)) {
+                    displayStudentData(selectedIndex);
+                }
+            });
+        }
+
+        // Fungsi untuk menunjukkan error
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Terjadi Kesalahan</h3>
+                <p>${message}</p>
+                <button class="retry-button" onclick="loadData()">
+                    <i class="fas fa-redo"></i> Coba Lagi
+                </button>
+            `;
+            
+            document.getElementById('dashboard-content').prepend(errorDiv);
+        }
+
+        // Fungsi untuk memperbarui status koneksi
+        function updateConnectionStatus(connected, message) {
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+            
+            isOnline = connected;
+            
+            if (connected) {
+                statusDot.className = 'status-dot';
+                statusText.textContent = message || 'Terhubung ke Google Sheets';
+            } else {
+                statusDot.className = 'status-dot offline';
+                statusText.textContent = message || 'Menggunakan data lokal';
+            }
+        }
+
+        // Fungsi utama untuk memuat data
+        async function loadData() {
+            try {
+                // Tampilkan loading
+                document.getElementById('loading-overlay').style.display = 'flex';
+                document.getElementById('dashboard-content').style.display = 'none';
+                
+                // Ambil data dari Google Sheets
+                console.log('Memulai pengambilan data dari Google Sheets...');
+                allStudentsData = await fetchDataFromGoogleSheets();
+                
+                console.log('Data berhasil diambil:', allStudentsData.length, 'siswa');
+                
+                // Perbarui status koneksi
+                const isFromGoogleSheets = allStudentsData !== FALLBACK_DATA;
+                updateConnectionStatus(
+                    isFromGoogleSheets, 
+                    isFromGoogleSheets ? 'Terhubung ke Google Sheets' : 'Menggunakan data lokal'
+                );
+                
+                // Isi dropdown siswa
+                populateStudentDropdown(allStudentsData);
+                
+                // Tampilkan data siswa pertama
+                if (allStudentsData.length > 0) {
+                    displayStudentData(0);
+                    document.getElementById('student-select').value = '0';
+                }
+                
+                // Sembunyikan loading
+                setTimeout(() => {
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    document.getElementById('dashboard-content').style.display = 'block';
+                    
+                    // Setup tabs
+                    setupTabs();
+                    
+                    // Load Chart.js jika belum dimuat
+                    loadChartJS();
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading-overlay').style.display = 'none';
+                showError(`Gagal memuat data: ${error.message}`);
+                updateConnectionStatus(false, 'Gagal menghubungkan');
+            }
+        }
+
+        // Fungsi untuk setup tabs
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Hapus active class dari semua tab
+                    document.querySelectorAll('.tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    
+                    // Hapus active class dari semua tab content
+                    document.querySelectorAll('.tab-content').forEach(c => {
+                        c.classList.remove('active');
+                    });
+                    
+                    // Tambah active class ke tab yang diklik
+                    this.classList.add('active');
+                    
+                    // Tampilkan tab content yang sesuai
+                    const tabId = this.getAttribute('data-tab');
+                    const tabContent = document.getElementById(`${tabId}-tab`);
+                    if (tabContent) {
+                        tabContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Fungsi untuk memuat Chart.js
+        function loadChartJS() {
+            if (typeof Chart === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                script.onload = function() {
+                    console.log('Chart.js loaded');
+                    // Update chart dengan data saat ini
+                    if (allStudentsData.length > 0) {
+                        const stats = calculateStatistics(allStudentsData[currentStudentIndex]);
+                        updateChart(stats.babAverages);
+                    }
+                };
+                document.head.appendChild(script);
+            }
+        }
+
+        // Event listener untuk retry button (didefinisikan di global scope)
+        window.retryLoad = function() {
+            loadData();
+        };
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mulai memuat data
+            loadData();
+            
+            // Auto-refresh setiap 5 menit
+            setInterval(() => {
+                if (isOnline) {
+                    console.log('Auto-refresh data...');
+                    loadData();
+                }
+            }, 300000); // 5 menit
+        });
+    </script>
+</body>
+</html>
