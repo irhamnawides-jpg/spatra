@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Soal Ujian</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        /* Header & Tombol */
+        header { text-align: center; margin-bottom: 30px; }
+        .btn-tambah {
+            background: #4f46e5; color: white; padding: 15px 30px; 
+            text-decoration: none; border-radius: 50px; font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block;
+            transition: transform 0.2s;
+        }
+        .btn-tambah:hover { transform: translateY(-2px); background: #4338ca; }
+
+        /* Kartu Soal */
+        .soal-card {
+            background: white; border-radius: 10px; padding: 20px; margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #4f46e5;
+        }
+        .soal-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: #888; }
+        
+        .soal-content { font-size: 16px; margin-bottom: 15px; line-height: 1.5; font-weight: 500; }
+        .soal-img { max-width: 100%; height: auto; margin-top: 10px; border-radius: 5px; border: 1px solid #eee; display: block; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .opt-item { 
+            padding: 10px; border: 1px solid #eee; border-radius: 5px; 
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .opt-label { font-weight: bold; color: #4f46e5; }
+        .opt-text { flex: 1; }
+        .opt-img { max-width: 80px; max-height: 80px; margin-left: 10px; border-radius: 4px; }
+        
+        /* Highlight Jawaban Benar (Untuk Admin) */
+        .is-correct { background-color: #d1fae5; border-color: #10b981; }
+
+        /* Loading */
+        #loading { text-align: center; font-size: 18px; color: #666; margin-top: 50px; }
+    </style>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Bank Soal Digital</h1>
+            <p>Daftar soal yang tersimpan di database</p>
+            <br>
+            <!-- Tombol ke Form Input -->
+            <a href="form_soal.html" class="btn-tambah">+ TAMBAH SOAL BARU</a>
+        </header>
+
+        <div id="loading">Memuat Bank Soal...</div>
+        <div id="soal_list"></div>
+    </div>
+
+    <script>
+        // GANTI ID SHEET
+        const SPREADSHEET_ID = '13uCawLAVcKogP0WuAtiUgl_HO63dfh_NoY9wc6-zzmY';
+
+        google.charts.load('current', {'packages':['table']});
+        google.charts.setOnLoadCallback(drawData);
+
+        function drawData() {
+            // Query ke SHEET KE-2 (Bank Soal)
+            // Parameter gid=1 merujuk ke sheet ke-2 (Sheet 1 biasanya gid=0)
+            var query = new google.visualization.Query(
+                'https://docs.google.com/spreadsheets/d/' + SPREADSHEET_ID + '/gviz/tq?gid=1&headers=1'
+            );
+            
+            // Urutkan dari yang terbaru (Kolom A Timestamp DESC)
+            query.setQuery('SELECT * ORDER BY A DESC LIMIT 50'); // Batasi 50 soal terakhir biar cepat
+            query.send(handleResponse);
+        }
+
+        function handleResponse(response) {
+            document.getElementById('loading').style.display = 'none';
+            if (response.isError()) {
+                alert('Error: ' + response.getMessage());
+                return;
+            }
+
+            const data = response.getDataTable();
+            const container = document.getElementById('soal_list');
+            
+            // Loop setiap baris data
+            for (let i = 0; i < data.getNumberOfRows(); i++) {
+                // Mapping Kolom (Sesuaikan urutan di Script: 0=Time, 1=ID, 2=SoalT, 3=SoalI, 4=AT, 5=AI, ..., 14=Kunci)
+                const id = data.getValue(i, 1);
+                const soalText = data.getValue(i, 2);
+                const soalImg = data.getValue(i, 3);
+                
+                const optA = { t: data.getValue(i, 4), i: data.getValue(i, 5) };
+                const optB = { t: data.getValue(i, 6), i: data.getValue(i, 7) };
+                const optC = { t: data.getValue(i, 8), i: data.getValue(i, 9) };
+                const optD = { t: data.getValue(i, 10), i: data.getValue(i, 11) };
+                const optE = { t: data.getValue(i, 12), i: data.getValue(i, 13) };
+                
+                const kunci = data.getValue(i, 14);
+
+                // Render HTML Kartu Soal
+                const card = document.createElement('div');
+                card.className = 'soal-card';
+                
+                let htmlContent = `
+                    <div class="soal-header">ID: ${id}</div>
+                    <div class="soal-content">
+                        ${soalText}
+                        ${soalImg ? `<img src="${soalImg}" class="soal-img">` : ''}
+                    </div>
+                    <div class="options-grid">
+                `;
+
+                // Helper render opsi
+                const renderOpt = (label, obj) => {
+                    const isCorrect = (label === kunci) ? 'is-correct' : '';
+                    return `
+                        <div class="opt-item ${isCorrect}">
+                            <span class="opt-label">${label}.</span>
+                            <div class="opt-text">${obj.t || ''}</div>
+                            ${obj.i ? `<img src="${obj.i}" class="opt-img">` : ''}
+                        </div>
+                    `;
+                };
+
+                htmlContent += renderOpt('A', optA) + renderOpt('B', optB) + renderOpt('C', optC) + renderOpt('D', optD) + renderOpt('E', optE);
+                htmlContent += `</div>`; // Close options-grid
+
+                card.innerHTML = htmlContent;
+                container.appendChild(card);
+            }
+        }
+    </script>
+</body>
+</html>
