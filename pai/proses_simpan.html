@@ -1,0 +1,174 @@
+  <!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Lembar Jawab Digital – Final</title>
+</head>
+<body>
+
+<h3>LEMBAR JAWAB SISWA</h3>
+
+<label>Record (Index Kolom V)</label><br>
+<input type="number" id="record"><br><br>
+
+<label>BAB</label><br>
+<select id="bab">
+  <option value="1">BAB 1</option>
+  <option value="2">BAB 2</option>
+  <option value="3">BAB 3</option>
+  <option value="4">BAB 4</option>
+  <option value="5">BAB 5</option>
+</select><br><br>
+
+<label>Aktivitas</label><br>
+<select id="aktivitas">
+  <option value="1">Aktivitas 1</option>
+  <option value="2">Aktivitas 2</option>
+  <option value="3">Aktivitas 3</option>
+  <option value="4">Aktivitas 4</option>
+  <option value="5">Aktivitas 5</option>
+</select><br><br>
+
+<button onclick="ambilData()">AMBIL DATA</button>
+
+<hr>
+
+<h4>DATA SEBELUMNYA</h4>
+<label id="nilai_lama"></label><br>
+<label id="jawaban_lama"></label>
+
+<hr>
+
+<label>Jawaban Siswa</label><br>
+<textarea id="jawaban_siswa" rows="5" cols="70"></textarea>
+
+<p>
+<b>Kunci Jawaban:</b><br>
+["tauhid", "iman", "ibadah", "akhlak", "sejarah"]
+</p>
+
+<button onclick="proses()">PROSES</button>
+
+<hr>
+
+<h4>HASIL PROSES</h4>
+<label id="nilai_baru"></label><br>
+<label id="jawaban_baru"></label><br><br>
+
+<pre id="status"></pre>
+
+<script>
+/* ================= KONFIGURASI ================= */
+
+// GANTI sesuai spreadsheet Anda
+const SHEET_ID = "1lueDGzRkaXb4XV0wnWlARF3OmkGnhIrP1Eg6fnBghf0";
+const GID = "0";
+
+// URL DEPLOY GAS
+const GAS_URL =
+"https://script.google.com/macros/s/AKfycbzWpcu8VWAJyj2NTs4DDJ5-gBV7X09nmbP1mJzt-NzOiMk4KnNMzmCzxGDc_-1ijyascw/exec";
+
+// KUNCI JAWABAN
+const KUNCI = ["tauhid", "iman", "ibadah", "akhlak", "sejarah"];
+
+// Mapping kolom Sheet
+const kolomNilai = {1:"G",2:"H",3:"I",4:"J",5:"K"};
+const kolomJawab = {1:"L",2:"M",3:"N",4:"O",5:"P"};
+const kolomGAS   = {1:7, 2:8, 3:9, 4:10, 5:11};
+
+// Data global
+let NILAI_SEBELUMNYA = "";
+let JWB_SEBELUMNYA = "";
+
+/* ================= AMBIL DATA ================= */
+function ambilData() {
+  const record = document.getElementById("record").value;
+  const bab = document.getElementById("bab").value;
+
+  if (!record) {
+    alert("Record wajib diisi");
+    return;
+  }
+
+  const q = `
+    SELECT ${kolomNilai[bab]}, ${kolomJawab[bab]}
+    WHERE V = ${record}
+  `;
+
+  const url =
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?` +
+    `gid=${GID}&tq=${encodeURIComponent(q)}`;
+
+  fetch(url)
+    .then(r => r.text())
+    .then(t => {
+      const json = JSON.parse(t.substr(47).slice(0, -2));
+      const row = json.table.rows[0];
+
+      if (!row) {
+        alert("Data tidak ditemukan");
+        return;
+      }
+
+      NILAI_SEBELUMNYA = row.c[0]?.v || "0#0#0#0#0";
+      JWB_SEBELUMNYA   = row.c[1]?.v || "-#-#-#-#-";
+
+      document.getElementById("nilai_lama").innerText =
+        "NILAI sebelumnya = " + NILAI_SEBELUMNYA;
+
+      document.getElementById("jawaban_lama").innerText =
+        "JAWABAN sebelumnya = " + JWB_SEBELUMNYA;
+    });
+}
+
+/* ================= PROSES & KIRIM ================= */
+function proses() {
+  const aktivitas = Number(document.getElementById("aktivitas").value);
+  const bab = Number(document.getElementById("bab").value);
+  const record = Number(document.getElementById("record").value);
+  const jawaban = document.getElementById("jawaban_siswa").value.toLowerCase();
+
+  // ===== KOREKSI =====
+  let nilai = 60;
+  if (jawaban.includes(KUNCI[aktivitas - 1])) nilai = 100;
+  else if (jawaban.length > 30) nilai = 80;
+
+  // ===== UPDATE ARRAY =====
+  let arrNilai = NILAI_SEBELUMNYA.split("#");
+  let arrJawab = JWB_SEBELUMNYA.split("#");
+
+  arrNilai[aktivitas - 1] = nilai;
+  arrJawab[aktivitas - 1] = jawaban;
+
+  const NILAI_SETELAH = arrNilai.join("#");
+  const JWB_SETELAH = arrJawab.join("#");
+
+  document.getElementById("nilai_baru").innerText =
+    "NILAI BARU = " + NILAI_SETELAH;
+
+  document.getElementById("jawaban_baru").innerText =
+    "JAWABAN BARU = " + JWB_SETELAH;
+ const kolomGAS2=kolomGAS[bab] +5;
+  // ===== KIRIM KE GAS =====
+  const fd = new URLSearchParams();
+  fd.append("baris", record);
+  fd.append("kolom", kolomGAS[bab]);
+  fd.append("data", NILAI_SETELAH);
+  fd.append("data2", JWB_SETELAH);
+  fd.append("kolom2", kolomGAS2 );
+
+  fetch(GAS_URL, { method: "POST", body: fd })
+    .then(r => r.text())
+    .then(r => {
+      document.getElementById("status").textContent =
+        "Nilai Aktivitas: " + nilai + "\n\nRESPON GAS:\n" + r;
+    })
+    .catch(err => {
+      document.getElementById("status").textContent = err;
+    });
+}
+</script>
+
+</body>
+</html>
+
