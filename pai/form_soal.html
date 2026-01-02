@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Bank Soal</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        
+        /* Form Layout */
+        .form-section { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #fafafa; }
+        .form-section h3 { margin-top: 0; color: #555; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; color: #444; }
+        textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; min-height: 60px; }
+        
+        .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .text-input { flex: 2; min-width: 200px; }
+        .file-input-wrapper { flex: 1; min-width: 150px; border: 1px dashed #aaa; padding: 10px; text-align: center; border-radius: 4px; background: white; font-size: 12px; position: relative; }
+        .file-input-wrapper input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
+        .file-status { font-size: 11px; color: green; display: none; margin-top: 2px; }
+
+        /* Kunci Jawaban */
+        .kunci-group { display: flex; gap: 10px; margin-top: 10px; }
+        .radio-opt { padding: 8px 15px; background: #eee; border-radius: 4px; cursor: pointer; border: 1px solid #ddd; }
+        .radio-opt:has(input:checked) { background: #4f46e5; color: white; border-color: #4f46e5; }
+        input[type="radio"] { display: none; }
+
+        /* Button */
+        .btn-submit { width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-back { display: inline-block; margin-bottom: 15px; text-decoration: none; color: #4f46e5; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="bank_soal.html" class="btn-back">← Kembali ke Bank Soal</a>
+        <h2>Tambah Soal Baru</h2>
+        <form id="soalForm">
+            
+            <!-- SOAL -->
+            <div class="form-section" style="border-left: 5px solid #4f46e5;">
+                <h3>Pertanyaan / Soal</h3>
+                <textarea id="soalText" placeholder="Tulis teks soal di sini..." required></textarea>
+                <div class="file-input-wrapper">
+                    <span id="labelSoal">📷 Upload Gambar Soal (Opsional)</span>
+                    <input type="file" id="fileSoal" accept="image/*">
+                    <div id="statusSoal" class="file-status">Gambar dipilih</div>
+                </div>
+            </div>
+
+            <!-- OPSI -->
+            <div class="form-section">
+                <h3>Pilihan Ganda</h3>
+                
+                <!-- Opsi A -->
+                <div class="input-group">
+                    <div class="text-input">
+                        <label>A.</label>
+                        <textarea id="optAText" placeholder="Teks Opsi A"></textarea>
+                    </div>
+                    <div class="file-input-wrapper">
+                        <span>📷 Img A</span>
+                        <input type="file" id="fileA" accept="image/*" onchange="showStatus(this, 'statusA')">
+                        <div id="statusA" class="file-status">Gambar dipilih</div>
+                    </div>
+                </div>
+
+                <!-- Opsi B -->
+                <div class="input-group">
+                    <div class="text-input">
+                        <label>B.</label>
+                        <textarea id="optBText" placeholder="Teks Opsi B"></textarea>
+                    </div>
+                    <div class="file-input-wrapper">
+                        <span>📷 Img B</span>
+                        <input type="file" id="fileB" accept="image/*" onchange="showStatus(this, 'statusB')">
+                        <div id="statusB" class="file-status">Gambar dipilih</div>
+                    </div>
+                </div>
+
+                <!-- Opsi C -->
+                <div class="input-group">
+                    <div class="text-input">
+                        <label>C.</label>
+                        <textarea id="optCText" placeholder="Teks Opsi C"></textarea>
+                    </div>
+                    <div class="file-input-wrapper">
+                        <span>📷 Img C</span>
+                        <input type="file" id="fileC" accept="image/*" onchange="showStatus(this, 'statusC')">
+                        <div id="statusC" class="file-status">Gambar dipilih</div>
+                    </div>
+                </div>
+
+                <!-- Opsi D -->
+                <div class="input-group">
+                    <div class="text-input">
+                        <label>D.</label>
+                        <textarea id="optDText" placeholder="Teks Opsi D"></textarea>
+                    </div>
+                    <div class="file-input-wrapper">
+                        <span>📷 Img D</span>
+                        <input type="file" id="fileD" accept="image/*" onchange="showStatus(this, 'statusD')">
+                        <div id="statusD" class="file-status">Gambar dipilih</div>
+                    </div>
+                </div>
+
+                <!-- Opsi E -->
+                <div class="input-group">
+                    <div class="text-input">
+                        <label>E.</label>
+                        <textarea id="optEText" placeholder="Teks Opsi E"></textarea>
+                    </div>
+                    <div class="file-input-wrapper">
+                        <span>📷 Img E</span>
+                        <input type="file" id="fileE" accept="image/*" onchange="showStatus(this, 'statusE')">
+                        <div id="statusE" class="file-status">Gambar dipilih</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KUNCI JAWABAN -->
+            <div class="form-section">
+                <label>Kunci Jawaban:</label>
+                <div class="kunci-group">
+                    <label class="radio-opt"><input type="radio" name="kunci" value="A" required> A</label>
+                    <label class="radio-opt"><input type="radio" name="kunci" value="B"> B</label>
+                    <label class="radio-opt"><input type="radio" name="kunci" value="C"> C</label>
+                    <label class="radio-opt"><input type="radio" name="kunci" value="D"> D</label>
+                    <label class="radio-opt"><input type="radio" name="kunci" value="E"> E</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btnSubmit">SIMPAN SOAL</button>
+        </form>
+    </div>
+
+    <script>
+        // GANTI URL INI
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyc_UaAYwZqWOGpmJ0ZYxDcb-FO1wKX4uCHUr5aXlJZ3mJrn5pXZwgKMyie8M8KhEUlDg/exec';
+
+        // UI Helper untuk status file
+        function showStatus(input, statusId) {
+            const status = document.getElementById(statusId);
+            if(input.files && input.files[0]) {
+                status.style.display = 'block';
+            } else {
+                status.style.display = 'none';
+            }
+        }
+
+        // Konversi File ke Base64
+        const fileToBase64 = (file) => new Promise((resolve, reject) => {
+            if(!file) return resolve({ base64: "", mimeType: "" });
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const content = reader.result.split(',')[1]; 
+                resolve({
+                    base64: content,
+                    mimeType: file.type
+                });
+            };
+            reader.onerror = error => reject(error);
+        });
+
+        document.getElementById('soalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            btn.textContent = "Mengirim...";
+            btn.disabled = true;
+
+            try {
+                // Ambil semua file
+                const fSoal = document.getElementById('fileSoal').files[0];
+                const fA = document.getElementById('fileA').files[0];
+                const fB = document.getElementById('fileB').files[0];
+                const fC = document.getElementById('fileC').files[0];
+                const fD = document.getElementById('fileD').files[0];
+                const fE = document.getElementById('fileE').files[0];
+
+                // Konversi semua file paralel
+                const [dSoal, dA, dB, dC, dD, dE] = await Promise.all([
+                    fileToBase64(fSoal), fileToBase64(fA), fileToBase64(fB),
+                    fileToBase64(fC), fileToBase64(fD), fileToBase64(fE)
+                ]);
+
+                const payload = {
+                    soalText: document.getElementById('soalText').value,
+                    fileSoal: dSoal.base64, mimeSoal: dSoal.mimeType,
+
+                    optAText: document.getElementById('optAText').value,
+                    fileA: dA.base64, mimeA: dA.mimeType,
+
+                    optBText: document.getElementById('optBText').value,
+                    fileB: dB.base64, mimeB: dB.mimeType,
+
+                    optCText: document.getElementById('optCText').value,
+                    fileC: dC.base64, mimeC: dC.mimeType,
+
+                    optDText: document.getElementById('optDText').value,
+                    fileD: dD.base64, mimeD: dD.mimeType,
+
+                    optEText: document.getElementById('optEText').value,
+                    fileE: dE.base64, mimeE: dE.mimeType,
+
+                    kunci: document.querySelector('input[name="kunci"]:checked').value
+                };
+
+                const res = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                if(res.ok) {
+                    alert("Soal Berhasil Disimpan!");
+                    location.reload(); // Reset form
+                } else {
+                    alert("Gagal menyimpan. Cek koneksi.");
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("Terjadi kesalahan.");
+            } finally {
+                btn.textContent = "SIMPAN SOAL";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
