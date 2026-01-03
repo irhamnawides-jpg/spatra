@@ -152,9 +152,9 @@ google.charts.setOnLoadCallback(loadData);
 
 function loadData(){
   const url =
-  "https://docs.google.com/spreadsheets/d/1_c6-TdEb2MogFIKksz-Zw_kbL3vDTCsGp7UL6V4qfr0/gviz/tq?gid=159953996";
+  "https://docs.google.com/spreadsheets/d/1lueDGzRkaXb4XV0wnWlARF3OmkGnhIrP1Eg6fnBghf0/gviz/tq?gid=1772571373";
   const query = new google.visualization.Query(url);
-  query.setQuery("SELECT J,K,L,M,N WHERE O='XII'");
+  query.setQuery("SELECT E,F,G,H,I  WHERE A='X' AND B='Semester 1' AND C='BAB 1'");
   query.send(renderLKPD);
 }
 
