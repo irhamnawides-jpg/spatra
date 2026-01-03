@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKPD Deep Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #2c3e50;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .header .subtitle {
+            color: #3498db;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .form-section {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .form-group label {
+            width: 120px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f7fd;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background-color: #219955;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-reset {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        }
+        
+        .output-section {
+            margin-top: 40px;
+            display: none;
+        }
+        
+        .output-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .output-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
+            font-size: 1.3rem;
+        }
+        
+        .output-content {
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .output-identitas {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .identitas-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .identitas-label {
+            font-weight: 600;
+            width: 120px;
+            color: #2c3e50;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .form-group label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            .form-group input {
+                width: 100%;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LKPD Deep Learning</h1>
+            <div class="subtitle">Cinta Tanah Air & Moderasi Beragama</div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Identitas Peserta Didik</h3>
+            <div class="form-group">
+                <label for="nama">Nama :</label>
+                <input type="text" id="nama" placeholder="Masukkan nama lengkap">
+            </div>
+            <div class="form-group">
+                <label for="kelas">Kelas :</label>
+                <input type="text" id="kelas" placeholder="Contoh: X IPA 1">
+            </div>
+            <div class="form-group">
+                <label for="tanggal">Tanggal :</label>
+                <input type="date" id="tanggal">
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="lkpd-table">
+                <thead>
+                    <tr>
+                        <th width="5%">No</th>
+                        <th width="20%">Aspek Deep Learning</th>
+                        <th width="35%">Panduan Jawaban</th>
+                        <th width="40%">Jawaban Peserta Didik</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Data akan diisi oleh JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-submit" id="submit-btn">Simpan Data</button>
+            <button class="btn-reset" id="reset-btn">Reset Form</button>
+        </div>
+        
+        <div class="output-section" id="output-section">
+            <div class="output-header">
+                Hasil LKPD Deep Learning
+            </div>
+            <div class="output-content">
+                <div class="output-identitas">
+                    <div class="identitas-item">
+                        <div class="identitas-label">Nama:</div>
+                        <div id="output-nama"></div>
+                    </div>
+                    <div class="identitas-item">
+                        <div class="identitas-label">Kelas:</div>
+                        <div id="output-kelas"></div>
+                    </div>
+                    <div class="identitas-item">
+                        <div class="identitas-label">Tanggal:</div>
+                        <div id="output-tanggal"></div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">Jawaban Peserta Didik</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="20%">Aspek Deep Learning</th>
+                                <th width="35%">Panduan Jawaban</th>
+                                <th width="40%">Jawaban Peserta Didik</th>
+                            </tr>
+                        </thead>
+                        <tbody id="output-table-body">
+                            <!-- Data akan diisi oleh JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Lembar Kerja Peserta Didik - Deep Learning<br>
+            Materi: Cinta Tanah Air & Moderasi Beragama
+        </div>
+    </div>
+
+    <script>
+        // Data array untuk aspek dan panduan jawaban
+        const aspekData = [
+            {
+                no: 1,
+                aspek: 'Permasalahan Nyata',
+                panduan: 'Masalah terkait cinta tanah air atau moderasi beragama di lingkungan sekitar'
+            },
+            {
+                no: 2,
+                aspek: 'Fakta yang Terjadi',
+                panduan: 'Peristiwa yang benar-benar terjadi (tanpa opini)'
+            },
+            {
+                no: 3,
+                aspek: 'Penyebab Masalah',
+                panduan: 'Alasan atau faktor penyebab terjadinya masalah'
+            },
+            {
+                no: 4,
+                aspek: 'Nilai yang Dilanggar',
+                panduan: 'Nilai Pancasila, agama, atau kebangsaan yang tidak dijalankan'
+            },
+            {
+                no: 5,
+                aspek: 'Dampak yang Ditimbulkan',
+                panduan: 'Dampak bagi diri sendiri, orang lain, dan bangsa'
+            }
+        ];
+
+        // Inisialisasi data default untuk tanggal
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set tanggal hari ini sebagai default
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('tanggal').value = formattedDate;
+            
+            // Render tabel dengan data dari array
+            renderTable();
+            
+            // Setup event listeners
+            document.getElementById('submit-btn').addEventListener('click', submitForm);
+            document.getElementById('reset-btn').addEventListener('click', resetForm);
+        });
+
+        // Fungsi untuk merender tabel dengan data dari array
+        function renderTable() {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            
+            aspekData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${item.no}</td>
+                    <td>${item.aspek}</td>
+                    <td>${item.panduan}</td>
+                    <td><textarea id="jawaban_${item.no}" placeholder="Tulis jawaban Anda di sini..."></textarea></td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Fungsi untuk submit form
+        function submitForm() {
+            const nama = document.getElementById('nama').value.trim();
+            const kelas = document.getElementById('kelas').value.trim();
+            const tanggal = document.getElementById('tanggal').value;
+            
+            // Validasi input
+            if (!nama || !kelas || !tanggal) {
+                alert('Harap lengkapi identitas peserta didik (Nama, Kelas, dan Tanggal)');
+                return;
+            }
+            
+            // Format tanggal
+            const dateObj = new Date(tanggal);
+            const formattedDate = dateObj.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Tampilkan data identitas di output
+            document.getElementById('output-nama').textContent = nama;
+            document.getElementById('output-kelas').textContent = kelas;
+            document.getElementById('output-tanggal').textContent = formattedDate;
+            
+            // Tampilkan tabel jawaban di output
+            renderOutputTable();
+            
+            // Tampilkan output section
+            document.getElementById('output-section').classList.add('active');
+            
+            // Scroll ke output section
+            document.getElementById('output-section').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Fungsi untuk merender tabel output
+        function renderOutputTable() {
+            const outputTableBody = document.getElementById('output-table-body');
+            outputTableBody.innerHTML = '';
+            
+            aspekData.forEach(item => {
+                const jawaban = document.getElementById(`jawaban_${item.no}`).value.trim() || 
+                                '(Belum diisi)';
+                
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${item.no}</td>
+                    <td>${item.aspek}</td>
+                    <td>${item.panduan}</td>
+                    <td>${jawaban}</td>
+                `;
+                
+                outputTableBody.appendChild(row);
+            });
+        }
+
+        // Fungsi untuk reset form
+        function resetForm() {
+            if (confirm('Apakah Anda yakin ingin mengosongkan semua data?')) {
+                document.getElementById('nama').value = '';
+                document.getElementById('kelas').value = '';
+                
+                // Set tanggal ke hari ini
+                const today = new Date();
+                const formattedDate = today.toISOString().split('T')[0];
+                document.getElementById('tanggal').value = formattedDate;
+                
+                // Kosongkan semua textarea
+                aspekData.forEach(item => {
+                    document.getElementById(`jawaban_${item.no}`).value = '';
+                });
+                
+                // Sembunyikan output section
+                document.getElementById('output-section').classList.remove('active');
+                
+                // Scroll ke atas
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Fungsi untuk menyimpan data ke localStorage (opsional)
+        function saveToLocalStorage() {
+            const data = {
+                nama: document.getElementById('nama').value,
+                kelas: document.getElementById('kelas').value,
+                tanggal: document.getElementById('tanggal').value,
+                jawaban: {}
+            };
+            
+            aspekData.forEach(item => {
+                data.jawaban[item.no] = document.getElementById(`jawaban_${item.no}`).value;
+            });
+            
+            localStorage.setItem('lkpdData', JSON.stringify(data));
+        }
+
+        // Fungsi untuk memuat data dari localStorage (opsional)
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('lkpdData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                document.getElementById('nama').value = data.nama || '';
+                document.getElementById('kelas').value = data.kelas || '';
+                document.getElementById('tanggal').value = data.tanggal || '';
+                
+                aspekData.forEach(item => {
+                    if (data.jawaban && data.jawaban[item.no]) {
+                        document.getElementById(`jawaban_${item.no}`).value = data.jawaban[item.no];
+                    }
+                });
+            }
+        }
+
+        // Panggil fungsi loadFromLocalStorage saat halaman dimuat
+        window.addEventListener('load', loadFromLocalStorage);
+        
+        // Auto-save saat ada perubahan
+        document.addEventListener('input', function() {
+            saveToLocalStorage();
+        });
+    </script>
+</body>
+</html>
