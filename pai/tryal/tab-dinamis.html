@@ -1,0 +1,245 @@
+ <!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>LKPD Digital – Aktivitas KBM</title>
+
+<!-- Google Visualization -->
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+
+<style>
+body{
+  font-family:Arial, sans-serif;
+  background:#f2f6fa;
+  padding:20px;
+}
+h2{margin-bottom:10px}
+.tab-btn{
+  padding:10px 15px;
+  border:none;
+  background:#d9d9d9;
+  cursor:pointer;
+  border-radius:6px;
+  margin-right:6px;
+  font-weight:600;
+}
+.tab-btn.active{
+  background:#1a5f7a;
+  color:white;
+}
+.tab-content{
+  display:none;
+  margin-top:20px;
+}
+.card{
+  background:white;
+  border-radius:10px;
+  padding:16px;
+  border:1px solid #ddd;
+}
+.scroll-box{
+  border:1px solid #ccc;
+  border-radius:8px;
+  padding:12px;
+  height:200px;
+  overflow-y:auto;
+  background:#fafafa;
+  margin-bottom:14px;
+}
+textarea{
+  width:100%;
+  min-height:90px;
+  border-radius:6px;
+  border:1px solid #bbb;
+  padding:8px;
+}
+button.action{
+  background:#1a5f7a;
+  color:white;
+  border:none;
+  padding:10px 18px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:600;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  border:1px solid #ccc;
+  padding:8px;
+}
+th{
+  background:#1a5f7a;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<h2>LKPD Digital – Aktivitas KBM</h2>
+
+<div>
+  <button class="tab-btn active" onclick="openTab(1)">Aktivitas 1</button>
+  <button class="tab-btn" onclick="openTab(2)">Aktivitas 2</button>
+  <button class="tab-btn" onclick="openTab(3)">Aktivitas 3</button>
+  <button class="tab-btn" onclick="openTab(4)">Aktivitas 4</button>
+  <button class="tab-btn" onclick="openTab(5)">Aktivitas 5</button>
+</div>
+
+<!-- AKTIVITAS 1 -->
+<div id="tab1" class="tab-content" style="display:block;">
+  <div class="card">
+    <h3>Aktivitas 1 – Membaca Cerita</h3>
+    <div id="ceritaArea"></div>
+    <textarea id="jawabanCerita" placeholder="Tuliskan hikmah cerita..."></textarea>
+    <br><br>
+    <button class="action" onclick="kerjakanCerita()">Kerjakan</button>
+    <p id="statusCerita"></p>
+  </div>
+</div>
+
+<!-- AKTIVITAS 2 -->
+<div id="tab2" class="tab-content">
+  <div class="card">
+    <h3>Aktivitas 2 – Infografis</h3>
+    <div id="infoArea"></div>
+    <textarea placeholder="Pesan dari infografis..."></textarea>
+  </div>
+</div>
+
+<!-- AKTIVITAS 3 -->
+<div id="tab3" class="tab-content">
+  <div class="card" id="aktivitas3"></div>
+</div>
+
+<!-- AKTIVITAS 4 -->
+<div id="tab4" class="tab-content">
+  <div class="card">
+    <h3>Aktivitas 4 – Pemahaman Konsep</h3>
+   <div id="akt4"></div>
+    <textarea placeholder="Pesan dari infografis..."></textarea>
+  </div>
+</div>
+
+<!-- AKTIVITAS 5 -->
+<div id="tab5" class="tab-content">
+  <div class="card">
+    <h3>Aktivitas 5 – Soal</h3>
+    <div id="containerSoal"></div>
+  </div>
+</div>
+
+<script>
+function openTab(n){
+  document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab'+n).style.display='block';
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+}
+
+function kerjakanCerita(){
+  const j = jawabanCerita.value.trim();
+  if(!j){ alert("Jawaban kosong"); return; }
+  statusCerita.innerHTML = "✅ Jawaban tersimpan";
+}
+
+/* GOOGLE SHEET */
+google.charts.load('current',{packages:['corechart']});
+google.charts.setOnLoadCallback(loadData);
+
+function loadData(){
+  const url =
+  "https://docs.google.com/spreadsheets/d/1_c6-TdEb2MogFIKksz-Zw_kbL3vDTCsGp7UL6V4qfr0/gviz/tq?gid=159953996";
+  const query = new google.visualization.Query(url);
+  query.setQuery("SELECT J,K,L,M,N WHERE O='XII'");
+  query.send(renderLKPD);
+}
+
+function renderLKPD(res){
+  if(res.isError()){ alert("Gagal load data"); return; }
+
+  const dt = res.getDataTable();
+
+  const cerita = dt.getValue(0,0);
+  const aktivitas3 = dt.getValue(0,2);
+  const soalGabungan = dt.getValue(0,4);
+  const info = dt.getValue(0,1);
+  const aktiv4 = dt.getValue(0,3);
+/* aktivitas 4 */
+ 
+ document.getElementById('akt4').innerHTML= "<p>"+aktiv4+"</p>"; 
+ 
+ /* AKTIVITAS 1 */
+  const c = cerita.split("|");
+  ceritaArea.innerHTML = `<h4>${c[0]}</h4><div class="scroll-box">${c[1]}</div>`;
+
+  /* AKTIVITAS 2 */
+  const i = info.split("@@");
+  infoArea.innerHTML = `
+    <img src="${i[1]}" style="max-width:100%;border-radius:8px"><p>${i[0]}</p>
+  `;
+
+  /* AKTIVITAS 3 */
+ 
+const b = aktivitas3.split("#");
+const nama=b[0], kelas=b[1], materi=b[2];
+const tanya=b[3].split("|");
+
+let html3 = `
+<h3 style="text-align:center;">LKPD Diskusi & Deep Learning</h3>
+
+<table style="border:none;">
+<tr><td><b>Nama</b></td><td>: ${nama}</td></tr>
+<tr><td><b>Kelas</b></td><td>: ${kelas}</td></tr>
+<tr><td><b>Materi</b></td><td>: ${materi}</td></tr>
+</table><br>
+
+<table>
+<tr>
+<th width="5%">No</th>
+<th width="35%">Hal yang Difokuskan</th>
+<th>Jawaban</th>
+</tr>
+`;
+
+tanya.forEach((q,i)=>{
+  html3+=`
+  <tr>
+    <td align="center">${i+1}</td>
+    <td>${q}</td>
+    <td><textarea placeholder="Hasil diskusi..."></textarea></td>
+  </tr>`;
+});
+
+html3+=`</table>`;
+document.getElementById("aktivitas3").innerHTML=html3;
+
+  /* AKTIVITAS 5 */
+const cs=document.getElementById("containerSoal");
+
+soalGabungan.split("#").forEach((item,i)=>{
+ if(!item.trim())return;
+ const p=item.split("|");
+ let s=p[0],img="";
+ if(s.includes("@@")){
+   const x=s.split("@@");
+   s=x[0];
+   img=`<img src="${x[1]}" style="max-width:100%;margin:8px 0;">`;
+ }
+ let h=`<div style="margin-bottom:15px;"><b>${s}</b>${img}`;
+ p.slice(1).forEach((o,j)=>{
+   h+=`<label style="display:block">
+   <input type="radio" name="soal${i}"> ${String.fromCharCode(65+j)}. ${o}
+   </label>`;
+ });
+ h+=`</div>`;
+ cs.innerHTML+=h;
+});
+}
+</script>
+
+</body>
+</html>
