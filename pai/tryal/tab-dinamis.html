@@ -74,6 +74,33 @@ th{
   background:#1a5f7a;
   color:white;
 }
+.dashboard-container {
+  display:flex;
+  gap:20px;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:#f4f6f8;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:20px;
+}
+.dashboard-col {
+  flex:1;
+  background:#ffffff;
+  padding:18px;
+  border-radius:10px;
+  box-shadow:0 4px 8px rgba(0,0,0,0.08);
+}
+.dashboard-title {
+  margin-top:0;
+  margin-bottom:15px;
+  color:#2c3e50;
+}
+.nilai-table {
+  width:100%;
+  border-collapse:collapse;
+  text-align:center;
+  font-size:14px;
+}
 </style>
 </head>
 
@@ -81,6 +108,49 @@ th{
 
 <h2>LKPD Digital – Aktivitas KBM</h2>
 
+<!-- DASHBOARD -->
+<div class="dashboard-container">
+  <!-- KOLOM 1: Rekap Nilai -->
+  <div class="dashboard-col">
+    <h3 class="dashboard-title">📘 Rekap Nilai</h3>
+    <table class="nilai-table">
+      <thead>
+        <tr style="background:#eaf2ff;">
+          <th style="border:1px solid #d0d7de; padding:8px;">Materi</th>
+          <th style="border:1px solid #d0d7de;">N1</th>
+          <th style="border:1px solid #d0d7de;">N2</th>
+          <th style="border:1px solid #d0d7de;">N3</th>
+          <th style="border:1px solid #d0d7de;">N4</th>
+          <th style="border:1px solid #d0d7de;">N5</th>
+          <th style="border:1px solid #d0d7de;">Rata²</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyBab"></tbody>
+      <tfoot id="tfootRata"></tfoot>
+    </table>
+  </div>
+
+  <!-- KOLOM 2: Tujuan Pembelajaran -->
+  <div class="dashboard-col">
+    <h3 class="dashboard-title">🎯 Tujuan Pembelajaran</h3>
+    <div id="tujuanPembelajaran" style="
+      font-size:14px;
+      line-height:1.7;
+      color:#333;
+    "></div>
+  </div>
+</div>
+
+<!-- DATA SUMBER (tersembunyi) -->
+<div id="sumberData" style="display:none;">
+  BAB 1#90#80#76#93#85
+  BAB 2#88#82#79#90#84
+  BAB 3#92#85#80#95#88
+  BAB 4#86#78#75#89#81
+  BAB 5#91#87#83#94#90
+</div>
+
+<!-- TAB NAVIGASI -->
 <div>
   <button class="tab-btn active" onclick="openTab(1)">Aktivitas 1</button>
   <button class="tab-btn" onclick="openTab(2)">Aktivitas 2</button>
@@ -130,9 +200,92 @@ th{
     <h3>Aktivitas 5 – Soal</h3>
     <div id="containerSoal"></div>
   </div>
+  <button class="action" onclick="kirim()">Kirim</button>
+  <div id="hasil" style="margin-top:10px; font-weight:bold;"></div>
+  <div id="kuncijwb" style="display:none;">ABBAD</div>
 </div>
 
 <script>
+// ================= FUNGSI DASHBOARD =================
+function loadDashboard() {
+  const sumber = document.getElementById("sumberData").innerHTML.trim();
+  const barisData = sumber.split(/\n+/);
+  const tbody = document.getElementById("tbodyBab");
+  const tfoot = document.getElementById("tfootRata");
+
+  let totalKolom = [0,0,0,0,0];
+  let jumlahBaris = barisData.length;
+
+  // Kosongkan tbody
+  tbody.innerHTML = '';
+  
+  barisData.forEach(baris => {
+    if (!baris.trim()) return;
+    
+    const data = baris.trim().split("#");
+    const nilai = data.slice(1).map(Number);
+
+    let rataBaris = (nilai.reduce((a,b)=>a+b,0)/nilai.length).toFixed(1);
+    nilai.forEach((n,i)=> totalKolom[i]+=n);
+
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+        <td style="border:1px solid #e1e4e8; padding:8px; background:#fafafa;">
+            ${data[0]}
+        </td>
+        ${nilai.map(n=>`
+            <td style="border:1px solid #e1e4e8;">${n}</td>
+        `).join("")}
+        <td style="
+            border:1px solid #e1e4e8;
+            font-weight:600;
+            background:#f0f8ff;
+        ">
+            ${rataBaris}
+        </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Kosongkan tfoot
+  tfoot.innerHTML = '';
+  
+  let trFoot = document.createElement("tr");
+  trFoot.innerHTML = `
+    <td style="
+        border:1px solid #d0d7de;
+        font-weight:600;
+        background:#eaf2ff;
+    ">
+        Rata²
+    </td>
+    ${totalKolom.map(t=>`
+        <td style="
+            border:1px solid #d0d7de;
+            background:#f6fbff;
+            font-weight:600;
+        ">
+            ${(t/jumlahBaris).toFixed(1)}
+        </td>
+    `).join("")}
+    <td style="border:1px solid #d0d7de;">-</td>
+  `;
+  tfoot.appendChild(trFoot);
+
+  // Tujuan Pembelajaran
+  const tujuan = "mampu membaca dan menganalisa, mampu memberikan informasi, mempu menganalisa, mampu mengimplementasikan";
+  const listTujuan = tujuan.split(",");
+
+  let html = "<ol style='padding-left:18px; margin:10px 0;'>";
+  listTujuan.forEach(t => {
+    html += `<li style="margin-bottom:8px;">${t.trim()}</li>`;
+  });
+  html += "</ol>";
+
+  document.getElementById("tujuanPembelajaran").innerHTML = html;
+}
+
+// ================= FUNGSI TAB =================
 function openTab(n){
   document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -141,12 +294,15 @@ function openTab(n){
 }
 
 function kerjakanCerita(){
-  const j = jawabanCerita.value.trim();
+  const j = document.getElementById("jawabanCerita").value.trim();
   if(!j){ alert("Jawaban kosong"); return; }
-  statusCerita.innerHTML = "✅ Jawaban tersimpan";
+  document.getElementById("statusCerita").innerHTML = "✅ Jawaban tersimpan";
+  
+  // Simpan ke localStorage
+  localStorage.setItem('jawaban_akt1', j);
 }
 
-/* GOOGLE SHEET */
+/* ================= GOOGLE SHEET ================= */
 google.charts.load('current',{packages:['corechart']});
 google.charts.setOnLoadCallback(loadData);
 
@@ -168,77 +324,174 @@ function renderLKPD(res){
   const soalGabungan = dt.getValue(0,4);
   const info = dt.getValue(0,1);
   const aktiv4 = dt.getValue(0,3);
-/* aktivitas 4 */
- 
- document.getElementById('akt4').innerHTML= "<p>"+aktiv4+"</p>"; 
- 
- /* AKTIVITAS 1 */
+  
+  /* aktivitas 4 */
+  document.getElementById('akt4').innerHTML= "<p>"+aktiv4+"</p>"; 
+  
+  /* AKTIVITAS 1 */
   const c = cerita.split("|");
-  ceritaArea.innerHTML = `<h4>${c[0]}</h4><div class="scroll-box">${c[1]}</div>`;
+  if (c.length >= 2) {
+    document.getElementById("ceritaArea").innerHTML = `<h4>${c[0]}</h4><div class="scroll-box">${c[1]}</div>`;
+  }
 
   /* AKTIVITAS 2 */
   const i = info.split("@@");
-  infoArea.innerHTML = `
-    <img src="${i[1]}" style="max-width:100%;border-radius:8px"><p>${i[0]}</p>
-  `;
+  if (i.length >= 2) {
+    document.getElementById("infoArea").innerHTML = `
+      <img src="${i[1]}" style="max-width:100%;border-radius:8px"><p>${i[0]}</p>
+    `;
+  }
 
   /* AKTIVITAS 3 */
- 
-const b = aktivitas3.split("#");
-const nama=b[0], kelas=b[1], materi=b[2];
-const tanya=b[3].split("|");
+  const b = aktivitas3.split("#");
+  if (b.length >= 4) {
+    const nama=b[0], kelas=b[1], materi=b[2];
+    const tanya=b[3].split("|");
 
-let html3 = `
-<h3 style="text-align:center;">LKPD Diskusi & Deep Learning</h3>
+    let html3 = `
+    <h3 style="text-align:center;">LKPD Diskusi & Deep Learning</h3>
 
-<table style="border:none;">
-<tr><td><b>Nama</b></td><td>: ${nama}</td></tr>
-<tr><td><b>Kelas</b></td><td>: ${kelas}</td></tr>
-<tr><td><b>Materi</b></td><td>: ${materi}</td></tr>
-</table><br>
+    <table style="border:none;">
+    <tr><td><b>Nama</b></td><td>: ${nama}</td></tr>
+    <tr><td><b>Kelas</b></td><td>: ${kelas}</td></tr>
+    <tr><td><b>Materi</b></td><td>: ${materi}</td></tr>
+    </table><br>
 
-<table>
-<tr>
-<th width="5%">No</th>
-<th width="35%">Hal yang Difokuskan</th>
-<th>Jawaban</th>
-</tr>
-`;
+    <table>
+    <tr>
+    <th width="5%">No</th>
+    <th width="35%">Hal yang Difokuskan</th>
+    <th>Jawaban</th>
+    </tr>
+    `;
 
-tanya.forEach((q,i)=>{
-  html3+=`
-  <tr>
-    <td align="center">${i+1}</td>
-    <td>${q}</td>
-    <td><textarea placeholder="Hasil diskusi..."></textarea></td>
-  </tr>`;
-});
+    tanya.forEach((q,i)=>{
+      html3+=`
+      <tr>
+        <td align="center">${i+1}</td>
+        <td>${q}</td>
+        <td><textarea placeholder="Hasil diskusi..." id="diskusi${i}"></textarea></td>
+      </tr>`;
+    });
 
-html3+=`</table>`;
-document.getElementById("aktivitas3").innerHTML=html3;
+    html3+=`</table>`;
+    document.getElementById("aktivitas3").innerHTML=html3;
+  }
 
   /* AKTIVITAS 5 */
-const cs=document.getElementById("containerSoal");
-
-soalGabungan.split("#").forEach((item,i)=>{
- if(!item.trim())return;
- const p=item.split("|");
- let s=p[0],img="";
- if(s.includes("@@")){
-   const x=s.split("@@");
-   s=x[0];
-   img=`<img src="${x[1]}" style="max-width:100%;margin:8px 0;">`;
- }
- let h=`<div style="margin-bottom:15px;"><b>${s}</b>${img}`;
- p.slice(1).forEach((o,j)=>{
-   h+=`<label style="display:block">
-   <input type="radio" name="soal${i}"> ${String.fromCharCode(65+j)}. ${o}
-   </label>`;
- });
- h+=`</div>`;
- cs.innerHTML+=h;
-});
+  const cs = document.getElementById("containerSoal");
+  cs.innerHTML = ''; // Kosongkan dulu
+  
+  if (soalGabungan) {
+    soalGabungan.split("#").forEach((item,i)=>{
+      if(!item.trim()) return;
+      const p = item.split("|");
+      let s = p[0], img = "";
+      
+      if(s.includes("@@")){
+        const x = s.split("@@");
+        s = x[0];
+        img = `<img src="${x[1]}" style="max-width:100%;margin:8px 0;">`;
+      }
+      
+      let h = `<div style="margin-bottom:15px;"><b>${i+1}. ${s}</b>${img}`;
+      
+      p.slice(1).forEach((o,j)=>{
+        h += `<label style="display:block; margin:5px 0;">
+          <input type="radio" name="soal${i}" value="${String.fromCharCode(65+j)}"> 
+          ${String.fromCharCode(65+j)}. ${o}
+        </label>`;
+      });
+      
+      h += `</div>`;
+      cs.innerHTML += h;
+    });
+  }
 }
+
+// ================= FUNGSI KIRIM =================
+function kirim(){
+  const kunci = document.getElementById("kuncijwb").innerText.trim();
+  let kumpulan = "";
+  let benar = 0;
+
+  for(let i=0;i<5;i++){
+    const pilih = document.querySelector('input[name="soal'+i+'"]:checked');
+    const j = pilih ? pilih.value : "-";
+    kumpulan += j;
+    if(j === kunci[i]) benar++;
+  }
+
+  const nilai = benar * 20;
+  const hasil = kumpulan + " | Nilai: " + nilai;
+  document.getElementById("hasil").innerText = hasil;
+  
+  // Panggil fungsi unggah
+  unggah(2, 1, 5, kumpulan + "|" + nilai);
+}
+
+function unggah(baris_siswa, BAB, akt, jBaru) {
+  // hitung index
+  const index = ((BAB-1) * 5) + (akt-1);
+  
+  // Simpan ke localStorage
+  localStorage.setItem('jawaban_akt' + akt, jBaru);
+  
+  // Tampilkan pesan konfirmasi
+  alert(`Jawaban Aktivitas ${akt} berhasil disimpan!\n${jBaru}`);
+  
+  // Update dashboard dengan nilai baru (contoh: update BAB 1 nilai ke-5)
+  updateNilaiDashboard(BAB, akt, parseInt(jBaru.split("|")[1]));
+  
+  console.log('Data tersimpan:', {
+    baris_siswa: baris_siswa,
+    BAB: BAB,
+    aktivitas: akt,
+    jawaban: jBaru,
+    index: index
+  });
+}
+
+function updateNilaiDashboard(bab, aktivitas, nilai) {
+  // Update nilai di dashboard (simulasi)
+  // Dalam implementasi nyata, ini akan update ke server/Google Sheets
+  console.log(`Dashboard: BAB ${bab}, Aktivitas ${aktivitas}, Nilai: ${nilai}`);
+  
+  // Beri warna feedback di tombol aktivitas 5
+  const btnAkt5 = document.querySelectorAll('.tab-btn')[4];
+  btnAkt5.style.background = '#2ecc71';
+  btnAkt5.style.color = 'white';
+}
+
+// ================= INISIALISASI =================
+// Muat dashboard saat halaman dimuat
+window.onload = function() {
+  loadDashboard();
+  
+  // Muat jawaban yang sudah disimpan (jika ada)
+  const savedJawaban1 = localStorage.getItem('jawaban_akt1');
+  if (savedJawaban1) {
+    document.getElementById("jawabanCerita").value = savedJawaban1;
+    document.getElementById("statusCerita").innerHTML = "✅ Jawaban tersimpan sebelumnya";
+  }
+  
+  const savedJawaban5 = localStorage.getItem('jawaban_akt5');
+  if (savedJawaban5) {
+    const parts = savedJawaban5.split("|");
+    if (parts.length >= 2) {
+      const kumpulanJawaban = parts[0];
+      const nilai = parts[1];
+      
+      // Tampilkan hasil sebelumnya
+      document.getElementById("hasil").innerText = kumpulanJawaban + " | Nilai: " + nilai;
+      
+      // Beri warna tombol aktivitas 5
+      const btnAkt5 = document.querySelectorAll('.tab-btn')[4];
+      btnAkt5.style.background = '#2ecc71';
+      btnAkt5.style.color = 'white';
+    }
+  }
+};
 </script>
 
 </body>
