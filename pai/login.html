@@ -1,0 +1,917 @@
+  <!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Siswa</title>
+   <style>
+    body { font-family: Arial, sans-serif; background:#f0f2f5; margin:0; padding:20px; }
+    .container { max-width:860px; margin:auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
+    h1,h2,h3,h4 { margin-top:0; }
+    .form-group { margin-bottom:15px; }
+    .label { display:block; margin-bottom:6px; font-weight:bold; }
+    .input { width:100%; padding:10px; border:1px solid #cfd8dc; border-radius:8px; }
+    .btn { background:#1e88e5; color:#fff; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; }
+    .btn:hover { background:#1565c0; }
+    .alert { margin-top:12px; padding:10px; border-radius:8px; font-size:14px; }
+    .alert.error { background:#fdecea; color:#c62828; }
+    .alert.info { background:#e3f2fd; color:#1565c0; }
+    .alert.success { background:#e8f5e9; color:#2e7d32; }
+    .card { border:1px solid #e0e0e0; border-radius:10px; padding:15px; margin-top:15px; }
+    .meta { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:10px; }
+    .meta-item { background:#f8fafc; border:1px solid #e0e0e0; border-radius:8px; padding:10px; font-size:14px; }
+    .list-item { border:1px solid #eaeaea; border-radius:8px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+    .muted { color:#666; font-size:14px; }
+    .aktivitas { margin-top:10px; }
+    
+    /* Styling Tab Baru */
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+      margin-bottom: 0;
+    }
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+      font-size: 15px;
+      color: #333;
+    }
+    .tab button:hover { background-color: #ddd; }
+    .tab button.active { background-color: #1e88e5; color: white; }
+    .tabcontent {
+      display: none;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-top: none;
+      background: #fff;
+    }
+    
+    .jawab-btn { background:#43a047; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:14px; margin-top:10px; }
+    .jawab-btn:hover { background:#2e7d32; }
+    .koreksi-btn { background:#ff9800; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:14px; margin-top:10px; margin-left:10px; }
+    .koreksi-btn:hover { background:#f57c00; }
+    
+    .aktivitas-form { margin-top: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f9f9f9; }
+    .soal-item { margin-bottom: 15px; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; }
+    .jawaban-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px; margin-bottom: 10px; min-height: 80px; }
+    .hasil-koreksi { margin-top: 15px; padding: 12px; border-radius: 8px; background: #e8f5e9; display: none; }
+    .kunci-label { display: inline-block; background: #1e88e5; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px; }
+    .judul-materi { font-size: 20px; font-weight: bold; color: #1565c0; margin-bottom: 10px; }
+    .tujuan-pembelajaran { font-size: 14px; color: #666; margin-bottom: 20px; padding: 10px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #1e88e5; line-height: 1.6; }
+    
+    /* Styling Label Baru untuk Status Update */
+    .update-status {
+      margin-top: 15px;
+      padding: 10px;
+      background: #fff3e0;
+      border: 1px solid #ffcc80;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: monospace;
+      word-break: break-all;
+    }
+
+    /* Styling Quiz */
+    .quiz-item { margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f8f9fa; }
+    .opsi-quiz { margin: 8px 0; padding: 8px; border: 1px solid #dee2e6; border-radius: 4px; background: white; cursor: pointer; }
+    .opsi-quiz:hover { background: #e9ecef; }
+    .opsi-quiz.selected { background: #d4edda; border-color: #c3e6cb; }
+    .opsi-quiz.correct { background: #d4edda; border-color: #28a745; }
+    .opsi-quiz.incorrect { background: #f8d7da; border-color: #dc3545; }
+    .penilaian-detail { margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #1e88e5; }
+    .aspek-penilaian { display: flex; justify-content: space-between; margin: 8px 0; padding: 8px; background: white; border-radius: 4px; border: 1px solid #e0e0e0; }
+    .nilai-bar { height: 10px; background: #e0e0e0; border-radius: 5px; margin-top: 5px; overflow: hidden; }
+    .nilai-fill { height: 100%; background: #1e88e5; border-radius: 5px; transition: width 0.5s ease; }
+    .total-nilai { font-size: 18px; font-weight: bold; color: #1e88e5; text-align: center; margin-top: 15px; padding: 10px; background: white; border-radius: 8px; border: 2px solid #1e88e5; }
+    .score-circle { width: 60px; height: 60px; border-radius: 50%; background: #1e88e5; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; margin: 10px auto; }
+    .feedback-item { margin: 5px 0; padding: 5px; background: #f8f9fa; border-radius: 4px; font-size: 13px; }
+    .quiz-instruction { padding: 10px; background: #e3f2fd; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
+    .kunci-quiz-container { margin-top: 20px; padding: 15px; background: #fff3e0; border-radius: 8px; border-left: 4px solid #ff9800; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>LKPD PAI & BUDI PEKERTI</h1>
+  <div id="loginSection">
+    <div class="form-group">
+      <label class="label">Username</label>
+      <input id="username" class="input" type="text" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label class="label">Password</label>
+      <input id="password" class="input" type="password" autocomplete="current-password"/>
+    </div>
+    <button class="btn" id="loginBtn">Masuk</button>
+    <div id="loginAlert" class="alert" style="display:none;"></div>
+  </div>
+
+  <div id="dashboardSection" style="display:none;">
+    <h2>Dashboard</h2>
+    
+    <!-- Elemen Meta Info -->
+    <div id="metaInfo" class="meta"></div>
+
+    <!-- Elemen Form Group (Kelas & Semester) -->
+    <div class="form-group">
+      <label class="label">Kelas</label>
+      <select id="kelasSelect" class="input" disabled></select>
+    </div>
+    <div class="form-group">
+      <label class="label">Semester</label>
+      <select id="semesterSelect" class="input"></select>
+    </div>
+
+    <!-- Kartu Daftar BAB -->
+    <div class="card" id="babCard">
+      <h3>Daftar BAB</h3>
+      <p class="muted">Pilih semester untuk melihat BAB. Klik "Lihat Aktivitas" untuk memuat Aktivitas 1-5.</p>
+      <div id="babList"></div>
+    </div>
+
+    <!-- Kartu Aktivitas (Menggunakan Tab) -->
+    <div class="card" id="aktivitasCard" style="display:none;">
+      <!-- JUDUL MATERI -->
+      <div id="judulMateriSection" style="display:none;">
+        <div id="judulMateri" class="judul-materi"></div>
+        <div id="tujuanPembelajaran" class="tujuan-pembelajaran"></div>
+      </div>
+      
+      <!-- Tombol Kembali -->
+      <button class="btn" onclick="backToDashboard()" style="margin-bottom:15px;">&larr; Kembali ke Dashboard</button>
+      
+      <!-- Container untuk Tab & Konten -->
+      <div id="aktivitasList" class="aktivitas"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================= KONFIGURASI =================
+const SHEET_ID = '1lueDGzRkaXb4XV0wnWlARF3OmkGnhIrP1Eg6fnBghf0';
+// Masukkan URL Web App Google Apps Script Anda di sini untuk menyimpan data
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQH-TdrrwW00C7Uhk0VXbOEFJYexWvCWfA-uUOL0bOgcKLyILJARVAerMnH2CN9PmeYA/exec";
+
+// ================= DATA GLOBAL =================
+let currentBabData = null;
+let selectedQuizAnswers = {};
+let quizKunciJawaban = '';
+let currentBabNum = null;
+let currentSemester = "";
+let userRowIndex = 0;
+
+// Menyimpan data mentah dari kolom H dan J
+let sheetData = {
+  H: "", // Kolom H: jawaban|nilai bab 1-5
+  J: ""  // Kolom J: jawaban|nilai bab 6-10
+};
+
+// Struktur Materi
+const materi = {
+  'Kelas X': {
+    'semester 1': [
+      { bab: 1, judul: 'Membangun Jiwa dan Kepribadian Muslim' },
+      { bab: 2, judul: 'Menganalisis Sumber Hukum Islam dan Ibadah sebagai Tiang Peradaban' },
+      { bab: 3, judul: 'Meneladani Perjuangan Dakwah Nabi Muhammad SAW di Mekah' },
+      { bab: 4, judul: 'Meneladani Perjuangan Dakwah Nabi Muhammad SAW di Madinah' },
+      { bab: 5, judul: 'Menjaga Kehormatan Manusia dengan Menjauhi Pergaulan Bebas dan Zina' }
+    ],
+    'semester 2': [
+      { bab: 6, judul: 'Membangun Sikap Toleransi dan Menghindari Kekerasan' },
+      { bab: 7, judul: 'Meraih Kesuksesan dengan Optimis, Ikhtiar, dan Tawakal' },
+      { bab: 8, judul: 'Menghindari Sifat Buruk: Aniaya, Dengki, dan Gibah' },
+      { bab: 9, judul: 'Memahami Ketentuan Pernikahan dalam Islam' },
+      { bab: 10, judul: 'Menjaga Kelestarian Lingkungan Hidup' }
+    ]
+  },
+  'Kelas XI': {
+    'semester 1': [
+      { bab: 1, judul: 'Memahami Hakikat dan Mewujudkan Ketauhidan' },
+      { bab: 2, judul: 'Membangun Sikap Jujur dan Menjauhi Dusta' },
+      { bab: 3, judul: 'Menghindari Perilaku Tercela: Riya, Sum\'ah, Takabbur' },
+      { bab: 4, judul: 'Meneladani Perjuangan Nabi dan Rasul Allah SWT' },
+      { bab: 5, judul: 'Meneladani Perilaku Mulia Khulafaur Rasyidin' }
+    ],
+    'semester 2': [
+      { bab: 6, judul: 'Menjaga Keutuhan Bangsa dengan Taat Hukum dan Norma' },
+      { bab: 7, judul: 'Menganalisis Prinsip Ekonomi dan Keuangan Islam' },
+      { bab: 8, judul: 'Menghindari Minuman Keras, Judi, dan Narkoba' },
+      { bab: 9, judul: 'Mewaspadai Bahaya LGBT dalam Pandangan Islam' },
+      { bab: 10, judul: 'Mengembangkan Sikap Semangat Menuntut Ilmu dan Beramal Shaleh' }
+    ]
+  },
+  'Kelas XII': {
+    'semester 1': [
+      { bab: 1, judul: 'SABAR DALAM MUSIBAH DAN UJIAN' },
+      { bab: 2, judul: 'HIDUP BERMAKNA' },
+      { bab: 3, judul: 'MUNAFIK TIDAK AKAN PERNAH MAJU' },
+      { bab: 4, judul: 'Mawaris dan Kearifan Lokal' },
+      { bab: 5, judul: 'Perkembangan Peradaban Islam di Dunia' }
+    ],
+    'semester 2': [
+      { bab: 6, judul: 'Cinta Tanah Air dan Moderasi Beragama' },
+      { bab: 7, judul: 'Ilmu Kalam' },
+      { bab: 8, judul: 'Sikap Inovatif dan Etika dalam Berorganisasi' },
+      { bab: 9, judul: 'Ijtihad' },
+      { bab: 10, judul: 'Peran Organisasi Islam di Indonesia' }
+    ]
+  }
+};
+
+// ================= FUNGSI UTILITAS =================
+
+function buildLoginUrl(username, password) {
+  const esc = (s) => String(s).replace(/"/g, '\\"');
+  const tq = `
+    select D,E,H,J,V
+    where A = "${esc(username)}"
+      and B = "${esc(password)}"
+    limit 1
+  `.replace(/\s+/g, ' ').trim();
+  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
+  const params = new URLSearchParams({ tqx: 'out:json', tq });
+  return `${base}?${params.toString()}`;
+}
+
+function buildBabUrl(kelasLogin, semesterLogin, babLogin) {
+  const esc = (s) => String(s).replace(/"/g, '\\"');
+  const tq = `
+    select *
+    where A = "${esc(kelasLogin)}"
+      and B = "${esc(semesterLogin)}"
+      and C = "${esc(babLogin)}"
+    limit 1
+  `.replace(/\s+/g, ' ').trim();
+  const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
+  const params = new URLSearchParams({ tqx: 'out:json', tq, gid: '1772571373' });
+  return `${base}?${params.toString()}`;
+}
+
+function extractGviz(text) {
+  const m = text.match(/setResponse\((.*)\);?/s);
+  if (!m) return null;
+  try {
+    const data = JSON.parse(m[1]);
+    return data?.table?.rows?.length ? data.table : null;
+  } catch (e) {
+    console.error('Error parsing Gviz response:', e);
+    return null;
+  }
+}
+
+// Update parseLogin untuk mengambil data H, J dan Row Index
+function parseLogin(text) {
+  const table = extractGviz(text);
+  if (!table) return null;
+  const row = table.rows[0].c;
+  const val = (c) => (c && c.v != null) ? c.v : '';
+  
+  // Mapping: 0:D (nama), 1:E (kelas), 2:H (data H), 3:J (data J), 4:V (index)
+  return {
+    nama: val(row[0]),
+    kelasRaw: val(row[1]),
+    indexRec: val(row[4]), // Kolom V (Index Row)
+    dataH: val(row[2]),   // Kolom H (Jawaban|Nilai Sem 1 - bab 1-5)
+    dataJ: val(row[3])    // Kolom J (Jawaban|Nilai Sem 2 - bab 6-10)
+  };
+}
+
+function parseAktivitasLengkap(text) {
+  const table = extractGviz(text);
+  if (!table) return null;
+  const row = table.rows[0].c;
+  const val = (c) => (c && c.v != null) ? c.v : '';
+  return {
+    judulMateri: val(row[3]),
+    aktivitas1: val(row[4]),
+    aktivitas2: val(row[5]),
+    aktivitas3: val(row[6]),
+    aktivitas4: val(row[7]),
+    aktivitas5: val(row[8]),
+    tujuanPembelajaran: val(row[10])
+  };
+}
+
+function splitPertanyaanKunci(aktivitasText) {
+  if (!aktivitasText || typeof aktivitasText !== 'string') return { pertanyaan: '', kunci: '' };
+  const parts = aktivitasText.split('__KUNCI__');
+  if (parts.length === 2) return { pertanyaan: parts[0].trim(), kunci: parts[1].trim() };
+  else if (parts.length === 1) return { pertanyaan: parts[0].trim(), kunci: '' };
+  else return { pertanyaan: aktivitasText.trim(), kunci: '' };
+}
+
+// ================= FUNGSI UPDATE DATA STRING =================
+
+// Fungsi untuk update data string dengan format "jawaban|nilai"
+function updateDataString(currentString, bab, aktivitas, jawabanSiswa, nilai) {
+  // Pisahkan string menjadi array
+  let arr = currentString ? currentString.split('#') : [];
+  
+  // Hitung index array: (Bab - 1) * 5 + (Aktivitas - 1)
+  let babi = bab > 5 ? bab - 5 : bab; // Sesuaikan bab untuk index
+  let index = (parseInt(babi) - 1) * 5 + (parseInt(aktivitas) - 1);
+  
+  // Pastikan array cukup panjang (isi dengan "0" jika kurang)
+  while (arr.length <= index) {
+    arr.push("0"); 
+  }
+  
+  // Format: "jawaban|nilai"
+  const newValue = `${jawabanSiswa}|${nilai}`;
+  
+  // Update nilai di index tersebut
+  arr[index] = newValue;
+  
+  // Gabungkan kembali menjadi string dengan pemisah #
+  return arr.join('#');
+}
+
+// Fungsi untuk update data quiz (format khusus untuk quiz)
+function updateQuizDataString(currentString, bab, jawabanSiswaString, nilai) {
+  // Untuk quiz (aktivitas 5), index = (bab-1)*5 + 4
+  let index = (parseInt(bab) - 1) * 5 + 4;
+  let arr = currentString ? currentString.split('#') : [];
+  
+  while (arr.length <= index) {
+    arr.push("0");
+  }
+  
+  // Format untuk quiz: "jawabanString|nilai"
+  const newValue = `${jawabanSiswaString}|${nilai}`;
+  arr[index] = newValue;
+  
+  return arr.join('#');
+}
+
+// Fungsi untuk mengirim ke Google Apps Script
+async function kirimKeGAS(posisiRecSiswa, kolom, data) {
+  if (!GAS_WEB_APP_URL) {
+    console.log(`[Simulasi] Baris: ${posisiRecSiswa}, Kolom: ${kolom}, Data: ${data}`);
+    return true;
+  }
+  
+  try {
+    // Format sesuai dengan GAS yang menerima data sebagai form-urlencoded
+    const formData = new URLSearchParams();
+    formData.append('baris', posisiRecSiswa);
+    formData.append('kolom', kolom);
+    formData.append('data', data);
+    
+    const response = await fetch(GAS_WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData
+    });
+    
+    const result = await response.text();
+    console.log('GAS Response:', result);
+    return result;
+  } catch (error) {
+    console.error("Gagal menyimpan ke GAS:", error);
+    return false;
+  }
+}
+
+// ================= FUNGSI ANALISIS JAWABAN =================
+
+function analisisJawabanEssay(jawabanUser, kunciJawaban) {
+  const jawaban = jawabanUser.toLowerCase().trim();
+  const kunci = kunciJawaban.toLowerCase().trim();
+  const kataKunci = ekstrakKataKunci(kunci);
+  const kataKunciDitemukan = hitungKataKunci(jawaban, kataKunci);
+  const skorSubstansi = Math.min(35, (kataKunciDitemukan / Math.max(kataKunci.length, 1)) * 35);
+  
+  const panjangJawaban = jawaban.split(/\s+/).length;
+  const panjangKunci = kunci.split(/\s+/).length;
+  const rasioPanjang = panjangJawaban / Math.max(panjangKunci, 10);
+  const skorKedalaman = Math.min(25, (Math.min(rasioPanjang, 2) / 2) * 25);
+  
+  const strukturLogis = analisisStrukturLogis(jawaban);
+  const skorPenalaran = strukturLogis * 25;
+  const strukturKalimat = analisisStrukturKalimat(jawaban);
+  const skorStruktur = strukturKalimat * 15;
+  
+  const total = skorSubstansi + skorKedalaman + skorPenalaran + skorStruktur;
+  const totalDisesuaikan = Math.min(95, Math.max(70, total));
+  
+  return {
+    substansi: Math.round(skorSubstansi * 100) / 100,
+    kedalaman: Math.round(skorKedalaman * 100) / 100,
+    penalaran: Math.round(skorPenalaran * 100) / 100,
+    struktur: Math.round(skorStruktur * 100) / 100,
+    total: Math.round(totalDisesuaikan * 100) / 100
+  };
+}
+
+function ekstrakKataKunci(teks) {
+  const stopWords = ['dan', 'atau', 'dengan', 'yang', 'pada', 'untuk', 'dari', 'dalam', 'adalah', 'itu', 'ini', 'saja', 'juga'];
+  const words = teks.split(/\s+/).filter(word => word.length > 2).filter(word => !stopWords.includes(word)).filter(word => !/^\d+$/.test(word)).filter(word => !/[.,!?;:]$/.test(word));
+  return [...new Set(words)].slice(0, 15);
+}
+
+function hitungKataKunci(jawaban, kataKunci) {
+  return kataKunci.filter(kata => new RegExp(`\\b${kata}\\b`, 'i').test(jawaban)).length;
+}
+
+function analisisStrukturLogis(jawaban) {
+  const kalimat = jawaban.split(/[.!?]+/).filter(k => k.trim().length > 0);
+  if (kalimat.length < 2) return 0.3;
+  const penghubung = ['karena', 'oleh karena itu', 'sehingga', 'maka', 'jadi', 'namun', 'tetapi', 'sedangkan', 'dengan demikian'];
+  const penghubungDitemukan = penghubung.filter(p => jawaban.includes(p));
+  if (kalimat.length > 3 && penghubungDitemukan.length > 1) return 0.9;
+  if (kalimat.length > 2 && penghubungDitemukan.length > 0) return 0.7;
+  if (kalimat.length > 1) return 0.5;
+  return 0.3;
+}
+
+function analisisStrukturKalimat(jawaban) {
+  const kalimat = jawaban.split(/[.!?]+/).filter(k => k.trim().length > 0);
+  if (kalimat.length === 0) return 0.3;
+  const rataRataKata = jawaban.split(/\s+/).length / kalimat.length;
+  if (kalimat.length >= 3 && rataRataKata > 5) return 0.9;
+  if (kalimat.length >= 2 && rataRataKata > 4) return 0.7;
+  if (kalimat.length >= 1) return 0.5;
+  return 0.3;
+}
+
+// ================= FUNGSI PARSING QUIZ =================
+function parseQuiz(quizText) {
+  const { pertanyaan, kunci } = splitPertanyaanKunci(quizText);
+  quizKunciJawaban = kunci.trim().toUpperCase();
+  if (!pertanyaan) return [];
+  const soalArray = pertanyaan.split(/#/).filter(s => s.trim().length > 0);
+  const quizData = [];
+  soalArray.forEach((soalStr, index) => {
+    const parts = soalStr.split('|').map(p => p.trim());
+    if (parts.length >= 6) quizData.push({ nomor: index + 1, soal: parts[0], opsi: { A: parts[1], B: parts[2], C: parts[3], D: parts[4], E: parts[5] } });
+    else if (parts.length >= 1) quizData.push({ nomor: index + 1, soal: parts[0], opsi: { A: '-', B: '-', C: '-', D: '-', E: '-' } });
+  });
+  return quizData;
+}
+
+// ================= FUNGSI UI =================
+function renderMeta({ nama, kelasRaw, indexRec }) {
+  userRowIndex = indexRec;
+  const meta = document.getElementById('metaInfo');
+  meta.innerHTML = `
+    <div class="meta-item"><strong>Nama:</strong><br>${nama || '-'}</div>
+    <div class="meta-item"><strong>Kelas:</strong><br>${kelasRaw || '-'}</div>
+    <div class="meta-item"><strong>Index Rec:</strong><br>${indexRec || '-'}</div>
+  `;
+}
+
+function populateSelectors(kelasRaw) {
+  const kelasSelect = document.getElementById('kelasSelect');
+  const semesterSelect = document.getElementById('semesterSelect');
+  const kelasUtama = String(kelasRaw).split('-')[0].trim();
+  const kelasKey = `Kelas ${kelasUtama}`;
+  kelasSelect.innerHTML = Object.keys(materi).map(k => `<option value="${k}" ${k === kelasKey ? 'selected' : ''}>${k}</option>`).join('');
+  kelasSelect.disabled = true;
+  const semesters = Object.keys(materi[kelasKey] || {});
+  semesterSelect.innerHTML = semesters.map(s => `<option value="${s}">${s}</option>`).join('');
+  semesterSelect.dataset.kelasKey = kelasKey;
+}
+
+function renderBabList() {
+  const semesterSelect = document.getElementById('semesterSelect');
+  const kelasKey = semesterSelect.dataset.kelasKey;
+  const semester = semesterSelect.value;
+  currentSemester = semester;
+  const list = document.getElementById('babList');
+  const items = materi[kelasKey]?.[semester] || [];
+  list.innerHTML = items.map(item => `
+    <div class="list-item">
+      <div><div><strong>Bab ${item.bab}</strong></div><div class="muted">${item.judul}</div></div>
+      <button class="btn" onclick="loadAktivitas(${item.bab})">Lihat Aktivitas</button>
+    </div>
+  `).join('') || '<div class="muted">Belum ada BAB untuk pilihan ini.</div>';
+  document.getElementById('aktivitasCard').style.display = 'none';
+  document.getElementById('aktivitasList').innerHTML = '';
+  document.getElementById('judulMateriSection').style.display = 'none';
+}
+
+function createEssayForm(aktivitasNomor, konten) {
+  const { pertanyaan, kunci } = splitPertanyaanKunci(konten);
+  if (!pertanyaan) return '<div class="muted">Tidak ada soal untuk aktivitas ini.</div>';
+  return `
+    <div class="aktivitas-form" id="aktivitasForm${aktivitasNomor}">
+      <h4>${pertanyaan}</h4>
+      <textarea class="jawaban-input" id="jawabanEssay${aktivitasNomor}" rows="6" placeholder="Tulis jawaban essay Anda di sini..."></textarea>
+      <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button class="jawab-btn" onclick="koreksiEssay(${aktivitasNomor})">KIRIM JAWABAN</button>
+        <button class="koreksi-btn" onclick="showKunciJawaban(${aktivitasNomor})" hidden>LIHAT KUNCI JAWABAN</button>
+      </div>
+      <div class="hasil-koreksi" id="hasilKoreksi${aktivitasNomor}"></div>
+      <div class="update-status" id="statusUpdate${aktivitasNomor}" style="display:none;"></div>
+      <input type="hidden" id="kunciEssay${aktivitasNomor}" value="${kunci.replace(/"/g, '&quot;') || ''}">
+    </div>
+  `;
+}
+
+function createQuizForm(quizData) {
+  if (quizData.length === 0) return '<div class="muted">Tidak ada quiz untuk aktivitas ini.</div>';
+  const quizItems = quizData.map((item, index) => `
+    <div class="quiz-item" id="quizSoal${index}">
+      <h4>Soal ${item.nomor}: ${item.soal}</h4>
+      <div class="opsi-quiz" onclick="selectQuizAnswer(${index}, 'A')" id="opsi${index}_A"><strong>A.</strong> ${item.opsi.A}</div>
+      <div class="opsi-quiz" onclick="selectQuizAnswer(${index}, 'B')" id="opsi${index}_B"><strong>B.</strong> ${item.opsi.B}</div>
+      <div class="opsi-quiz" onclick="selectQuizAnswer(${index}, 'C')" id="opsi${index}_C"><strong>C.</strong> ${item.opsi.C}</div>
+      <div class="opsi-quiz" onclick="selectQuizAnswer(${index}, 'D')" id="opsi${index}_D"><strong>D.</strong> ${item.opsi.D}</div>
+      <div class="opsi-quiz" onclick="selectQuizAnswer(${index}, 'E')" id="opsi${index}_E"><strong>E.</strong> ${item.opsi.E}</div>
+    </div>
+  `).join('');
+  return `
+    <div class="aktivitas-form" id="quizForm">
+      <div class="quiz-instruction"><strong>📝 Petunjuk:</strong> Pilih satu jawaban yang paling benar untuk setiap soal.</div>
+      ${quizItems}
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="jawab-btn" onclick="koreksiQuiz()">KIRIM JAWABAN</button>
+        <button class="koreksi-btn" onclick="resetQuiz()">RESET</button>
+        <button class="koreksi-btn" onclick="showKunciQuiz()" style="background:#9c27b0;">PEMBAHASAN</button>
+      </div>
+      <div class="hasil-koreksi" id="hasilQuiz"></div>
+      <div class="update-status" id="statusUpdateQuiz" style="display:none;"></div>
+      <input type="hidden" id="totalSoalQuiz" value="${quizData.length}">
+      <input type="hidden" id="kunciQuizGlobal" value="${quizKunciJawaban}">
+    </div>
+  `;
+}
+
+function tampilkanHasilEssay(aktivitasNomor, hasilAnalisis) {
+  const hasilDiv = document.getElementById(`hasilKoreksi${aktivitasNomor}`);
+  hasilDiv.innerHTML = `
+    <div class="penilaian-detail" hidden>
+      <h4>Hasil Analisis Jawaban:</h4>
+      <div class="total-nilai"><div>NILAI TOTAL</div><div class="score-circle">${hasilAnalisis.total}</div></div>
+    </div>`;
+  hasilDiv.style.display = 'block';
+}
+
+function tampilkanHasilQuiz(score, totalSoal) {
+  const hasilDiv = document.getElementById('hasilQuiz');
+  const persentase = Math.round((score / totalSoal) * 100);
+  hasilDiv.innerHTML = `
+    <div class="penilaian-detail">
+      <h4>Hasil Quiz:</h4>
+      <div style="text-align: center; padding: 20px;">
+        <div class="score-circle">${score}/${totalSoal}</div>
+        <div style="font-size: 18px; font-weight: bold; margin-top: 10px; color: ${persentase >= 70 ? '#2e7d32' : '#c62828'}">${persentase}%</div>
+      </div>
+    </div>`;
+  hasilDiv.style.display = 'block';
+}
+
+// ================= HANDLER KOREKSI & UPDATE =================
+
+// Logika utama pengiriman jawaban (Essay)
+async function koreksiEssay(aktivitasNomor) {
+  const jawaban = document.getElementById(`jawabanEssay${aktivitasNomor}`).value.trim();
+  const kunciInput = document.getElementById(`kunciEssay${aktivitasNomor}`);
+  const kunci = kunciInput ? kunciInput.value : '';
+  
+  // Validasi
+  if (!jawaban) { 
+    alert('Silakan tulis jawaban terlebih dahulu.'); 
+    return; 
+  }
+  
+  if (!kunci.trim()) { 
+    alert('Kunci jawaban tidak tersedia.'); 
+    return; 
+  }
+  
+  // 1. Hitung Nilai
+  const hasil = analisisJawabanEssay(jawaban, kunci);
+  const nilai = hasil.total;
+  
+  // 2. Tentukan kolom database berdasarkan bab
+  let kolomDatabase, dataStringLama;
+  
+  if (currentBabNum <= 5) {
+    // Bab 1-5 => Kolom H (kolom 8)
+    kolomDatabase = 8;
+    dataStringLama = sheetData.H;
+  } else {
+    // Bab 6-10 => Kolom J (kolom 10)
+    kolomDatabase = 10;
+    dataStringLama = sheetData.J;
+  }
+  
+  // 3. Update data string
+  const dataStringBaru = updateDataString(dataStringLama, currentBabNum, aktivitasNomor, jawaban, nilai);
+  
+  // 4. Update data global
+  if (currentBabNum <= 5) {
+    sheetData.H = dataStringBaru;
+  } else {
+    sheetData.J = dataStringBaru;
+  }
+  
+  // 5. Kirim ke GAS
+  const result = await kirimKeGAS(userRowIndex, kolomDatabase, dataStringBaru);
+  
+  // 6. Tampilkan Hasil
+  tampilkanHasilEssay(aktivitasNomor, hasil);
+  
+  // 7. Tampilkan Status Update
+  const statusDiv = document.getElementById(`statusUpdate${aktivitasNomor}`);
+  statusDiv.innerHTML = `<strong>Status Update:</strong><br>` +
+                        `Bab: ${currentBabNum}, Aktivitas: ${aktivitasNomor}<br>` +
+                        `Kolom Database: ${kolomDatabase} (${currentBabNum <= 5 ? 'H' : 'J'})<br>` +
+                        `Data baru: ${dataStringBaru}`;
+  statusDiv.style.display = 'block';
+  
+  // 8. Alert konfirmasi
+  alert(`Jawaban telah dikirim!\nNilai: ${nilai}\nData telah diperbarui.`);
+}
+
+// Logika utama pengiriman jawaban (Quiz)
+async function koreksiQuiz() {
+  const totalSoal = parseInt(document.getElementById('totalSoalQuiz').value) || 0;
+  const kunciJawaban = quizKunciJawaban;
+  
+  if (!kunciJawaban) { 
+    alert('Kunci jawaban tidak tersedia.'); 
+    return; 
+  }
+  
+  // 1. Hitung Skor
+  let score = 0;
+  const jawabanSiswaArray = [];
+  
+  for (let i = 0; i < totalSoal; i++) {
+    const jawabanSiswa = selectedQuizAnswers[i] || '-';
+    const kunciPerSoal = kunciJawaban[i] || '-';
+    jawabanSiswaArray.push(jawabanSiswa);
+    
+    // Update tampilan jawaban
+    ['A', 'B', 'C', 'D', 'E'].forEach(o => {
+      const el = document.getElementById(`opsi${i}_${o}`);
+      if(el) { 
+        el.classList.remove('correct', 'incorrect'); 
+        if(o === kunciPerSoal) el.classList.add('correct'); 
+        else if(jawabanSiswa === o) el.classList.add('incorrect'); 
+      }
+    });
+    
+    if(jawabanSiswa === kunciPerSoal) score++;
+  }
+  
+  const jawabanSiswaString = jawabanSiswaArray.join('');
+  const nilaiAkhir = Math.round((score/totalSoal)*100);
+  
+  // 2. Tentukan kolom database berdasarkan bab
+  let kolomDatabase, dataStringLama;
+  
+  if (currentBabNum <= 5) {
+    kolomDatabase = 8; // Kolom H
+    dataStringLama = sheetData.H;
+  } else {
+    kolomDatabase = 10; // Kolom J
+    dataStringLama = sheetData.J;
+  }
+  
+  // 3. Update data string untuk quiz (aktivitas 5)
+  const dataStringBaru = updateQuizDataString(dataStringLama, currentBabNum, jawabanSiswaString, nilaiAkhir);
+  
+  // 4. Update data global
+  if (currentBabNum <= 5) {
+    sheetData.H = dataStringBaru;
+  } else {
+    sheetData.J = dataStringBaru;
+  }
+  
+  // 5. Kirim ke GAS
+  const result = await kirimKeGAS(userRowIndex, kolomDatabase, dataStringBaru);
+  
+  // 6. Alert
+  alert(`QUIZ TELAH DIKIRIM!\n\n` +
+        `Jawaban Anda: ${jawabanSiswaString}\n` +
+        `Nilai: ${nilaiAkhir}\n` +
+        `Skor: ${score}/${totalSoal}\n\n` +
+        `Data telah disimpan.`);
+  
+  // 7. Label Status
+  const statusDiv = document.getElementById('statusUpdateQuiz');
+  statusDiv.innerHTML = `<strong>Status Update:</strong><br>` +
+                       `Bab: ${currentBabNum}, Quiz (Aktivitas 5)<br>` +
+                       `Kolom Database: ${kolomDatabase} (${currentBabNum <= 5 ? 'H' : 'J'})<br>` +
+                       `Data baru: ${dataStringBaru}`;
+  statusDiv.style.display = 'block';
+  
+  // 8. Tampilkan Hasil
+  tampilkanHasilQuiz(score, totalSoal);
+}
+
+function selectQuizAnswer(soalIndex, opsi) {
+  ['A', 'B', 'C', 'D', 'E'].forEach(o => {
+    const el = document.getElementById(`opsi${soalIndex}_${o}`);
+    if(el) el.classList.remove('selected');
+  });
+  
+  const el = document.getElementById(`opsi${soalIndex}_${opsi}`);
+  if(el) { 
+    el.classList.add('selected'); 
+    selectedQuizAnswers[soalIndex] = opsi; 
+  }
+}
+
+function resetQuiz() {
+  selectedQuizAnswers = {};
+  const totalSoal = parseInt(document.getElementById('totalSoalQuiz').value) || 0;
+  for (let i = 0; i < totalSoal; i++) {
+    ['A', 'B', 'C', 'D', 'E'].forEach(o => {
+      const el = document.getElementById(`opsi${i}_${o}`);
+      if(el) el.classList.remove('selected', 'correct', 'incorrect');
+    });
+  }
+  document.getElementById('hasilQuiz').style.display = 'none';
+}
+
+function showKunciJawaban(aktivitasNomor) {
+  const kunci = document.getElementById(`kunciEssay${aktivitasNomor}`).value;
+  if(!kunci) return alert('Tidak ada kunci.');
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:1000;';
+  modal.innerHTML = `<div style="background:white;padding:20px;border-radius:10px;max-width:600px;"><h3>Kunci Jawaban</h3><div style="white-space:pre-line;padding:10px;background:#e3f2fd;border-radius:8px;">${kunci}</div><button onclick="this.parentElement.parentElement.remove()" style="margin-top:10px;padding:8px 16px;background:#1e88e5;color:white;border:none;border-radius:4px;cursor:pointer;">Tutup</button></div>`;
+  document.body.appendChild(modal);
+}
+
+function showKunciQuiz() {
+  if(!quizKunciJawaban) return alert('Tidak ada kunci.');
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;justify-content:center;align-items:center;z-index:1000;';
+  modal.innerHTML = `<div style="background:white;padding:20px;border-radius:10px;max-width:600px;"><h3>Kunci Quiz</h3><div style="text-align:center;font-size:24px;font-weight:bold;margin-bottom:15px;">${quizKunciJawaban}</div><button onclick="this.parentElement.parentElement.remove()" style="padding:8px 16px;background:#1e88e5;color:white;border:none;border-radius:4px;cursor:pointer;">Tutup</button></div>`;
+  document.body.appendChild(modal);
+}
+
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) { 
+    tabcontent[i].style.display = "none"; 
+  }
+  
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) { 
+    tablinks[i].className = tablinks[i].className.replace(" active", ""); 
+  }
+  
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+function renderAktivitas(data, babNomor) {
+  const card = document.getElementById('aktivitasCard');
+  const list = document.getElementById('aktivitasList');
+  const judulSection = document.getElementById('judulMateriSection');
+  
+  document.getElementById('judulMateri').textContent = 'BAB ' + babNomor + ' - ' + (data.judulMateri || 'Judul Materi');
+  const tujuanLines = (data.tujuanPembelajaran || '-').split(/\n+/);
+  document.getElementById('tujuanPembelajaran').innerHTML = `<strong>Tujuan Pembelajaran:</strong><br>${tujuanLines.map((l,i)=>`${i+1}. ${l}`).join('<br>')}`;
+  
+  judulSection.style.display = 'block';
+  card.style.display = 'block';
+
+  selectedQuizAnswers = {};
+  quizKunciJawaban = '';
+
+  const aktivitasData = [
+    { id: 'Aktivitas1', label: 'Aktivitas 1', konten: data.aktivitas1, tipe: 'essay' },
+    { id: 'Aktivitas2', label: 'Aktivitas 2', konten: data.aktivitas2, tipe: 'essay' },
+    { id: 'Aktivitas3', label: 'Aktivitas 3', konten: data.aktivitas3, tipe: 'essay' },
+    { id: 'Aktivitas4', label: 'Aktivitas 4', konten: data.aktivitas4, tipe: 'essay' },
+    { id: 'Aktivitas5', label: 'Aktivitas 5', konten: data.aktivitas5, tipe: 'quiz' }
+  ];
+
+  const tabButtons = aktivitasData.map((x, i) => `<button class="tablinks ${i === 0 ? 'active' : ''}" onclick="openTab(event, '${x.id}')">${x.label}</button>`).join('');
+  const tabContents = aktivitasData.map((x, i) => {
+    let contentHTML = '';
+    if (x.tipe === 'essay') contentHTML = createEssayForm(i + 1, x.konten);
+    else if (x.tipe === 'quiz') { 
+      const qData = parseQuiz(x.konten); 
+      contentHTML = createQuizForm(qData); 
+    }
+    return `<div id="${x.id}" class="tabcontent" style="display: ${i === 0 ? 'block' : 'none'};"><p style="margin-top:0;"><strong>${x.label}:</strong></p>${contentHTML}</div>`;
+  }).join('');
+
+  list.innerHTML = `<div class="tab">${tabButtons}</div>${tabContents}`;
+}
+
+function backToDashboard() {
+  document.getElementById('aktivitasCard').style.display = 'none';
+  document.getElementById('babCard').style.display = 'block';
+  document.getElementById('metaInfo').style.display = 'grid';
+  document.getElementById('judulMateriSection').style.display = 'none';
+  document.querySelectorAll('#dashboardSection .form-group').forEach(el => el.style.display = 'block');
+}
+
+async function loadAktivitas(babNomor) {
+  const semesterSelect = document.getElementById('semesterSelect');
+  const kelasKey = semesterSelect.dataset.kelasKey;
+  const kelasLogin = kelasKey.replace('Kelas ', '');
+  const semesterLogin = semesterSelect.value;
+  currentSemester = semesterLogin;
+  currentBabNum = babNomor;
+
+  const url = buildBabUrl(kelasLogin, semesterLogin, babNomor);
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Gagal akses Google Sheets.');
+    const text = await res.text();
+    const data = parseAktivitasLengkap(text);
+
+    if (!data) {
+      document.getElementById('babCard').style.display = 'none';
+      document.getElementById('metaInfo').style.display = 'none';
+      document.querySelectorAll('#dashboardSection .form-group').forEach(el => el.style.display = 'none');
+      document.getElementById('aktivitasCard').style.display = 'block';
+      document.getElementById('judulMateriSection').style.display = 'none';
+      document.getElementById('aktivitasList').innerHTML = '<div class="muted">Data tidak ditemukan.</div>';
+      return;
+    }
+
+    currentBabData = data;
+    selectedQuizAnswers = {};
+    quizKunciJawaban = '';
+
+    document.getElementById('babCard').style.display = 'none';
+    document.getElementById('metaInfo').style.display = 'none';
+    document.querySelectorAll('#dashboardSection .form-group').forEach(el => el.style.display = 'none');
+
+    renderAktivitas(data, babNomor);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('babCard').style.display = 'none';
+    document.getElementById('metaInfo').style.display = 'none';
+    document.querySelectorAll('#dashboardSection .form-group').forEach(el => el.style.display = 'none');
+    document.getElementById('aktivitasCard').style.display = 'block';
+    document.getElementById('judulMateriSection').style.display = 'none';
+    document.getElementById('aktivitasList').innerHTML = '<div class="muted">Terjadi kendala.</div>';
+  }
+}
+
+async function handleLogin() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const alertBox = document.getElementById('loginAlert');
+
+  alertBox.style.display = 'none';
+  alertBox.className = 'alert';
+
+  if (!username || !password) {
+    alertBox.textContent = 'Isi username dan password.';
+    alertBox.classList.add('error');
+    alertBox.style.display = 'block';
+    return;
+  }
+
+  const url = buildLoginUrl(username, password);
+
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Gagal mengakses Google Sheets.');
+    const text = await res.text();
+    const parsed = parseLogin(text);
+
+    if (!parsed) {
+      alertBox.textContent = 'Username atau password tidak sesuai.';
+      alertBox.classList.add('error');
+      alertBox.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('dashboardSection').style.display = 'block';
+
+    // Simpan data kolom H dan J ke variabel global
+    sheetData.H = parsed.dataH || "";
+    sheetData.J = parsed.dataJ || "";
+
+    renderMeta(parsed);
+    populateSelectors(parsed.kelasRaw);
+    renderBabList();
+
+    document.getElementById('semesterSelect').addEventListener('change', renderBabList);
+
+  } catch (err) {
+    alertBox.textContent = 'Terjadi kendala saat login.';
+    alertBox.classList.add('error');
+    alertBox.style.display = 'block';
+  }
+}
+
+// Inisialisasi Event Listeners
+document.getElementById('loginBtn').addEventListener('click', handleLogin);
+document.addEventListener('keydown', (e) => {
+  const dashShown = document.getElementById('dashboardSection').style.display === 'block';
+  if (e.key === 'Enter' && !dashShown) handleLogin();
+});
+</script>
+</body>
+</html>
