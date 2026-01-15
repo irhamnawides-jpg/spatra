@@ -507,7 +507,7 @@ function createEssayForm(aktivitasNomor, konten) {
         <button class="koreksi-btn" onclick="showKunciJawaban(${aktivitasNomor})" hidden>LIHAT KUNCI JAWABAN</button>
       </div>
       <div class="hasil-koreksi" id="hasilKoreksi${aktivitasNomor}"></div>
-      <div class="update-status" id="statusUpdate${aktivitasNomor}" style="display:none;"></div>
+      <div class="update-status" id="statusUpdate${aktivitasNomor}" style="display:none;" hidden></div>
       <input type="hidden" id="kunciEssay${aktivitasNomor}" value="${kunci.replace(/"/g, '&quot;') || ''}">
     </div>
   `;
